@@ -27,31 +27,58 @@ logger = logging.getLogger(__name__)
 _rule_cache: dict = {}
 
 
-def _build_ctx(position: NormalizedPosition) -> dict:
-    ctx = {"speed": position.speed or 0, "ignition": position.ignition, **(position.sensors or {})}
-    for k, v in list((position.sensors or {}).items()):
-        if "." in k:
-            parts = k.split(".")
-            d = ctx
-            for part in parts[:-1]:
-                d = d.setdefault(part, {})
-            d[parts[-1]] = v
-            d_cap = ctx
-            for part in parts[:-1]:
-                d_cap = d_cap.setdefault(part.capitalize(), {})
-            d_cap[parts[-1].capitalize()] = v
+def _set_nested(root: dict, parts: list, val) -> None:
+    d = root
+    for part in parts[:-1]:
+        if not isinstance(d, dict):
+            return
+        curr = d.get(part)
+        if not isinstance(curr, dict):
+            d[part] = {"_value": curr, "value": curr} if curr is not None else {}
+        d = d[part]
 
-    beacons = ctx.get("beacon_ids") or (ctx.get("ble", {}).get("beacons") if isinstance(ctx.get("ble"), dict) else None)
+    if isinstance(d, dict) and parts:
+        last = parts[-1]
+        curr = d.get(last)
+        if isinstance(curr, dict) and not isinstance(val, dict):
+            curr["_value"] = val
+            curr["value"] = val
+        elif isinstance(curr, dict) and isinstance(val, dict):
+            curr.update(val)
+        else:
+            d[last] = val
+
+
+def build_rule_context(position: NormalizedPosition) -> dict:
+    sensors = position.sensors if isinstance(position.sensors, dict) else {}
+    ctx = {"speed": position.speed or 0, "ignition": position.ignition, **sensors}
+
+    for k, v in list(sensors.items()):
+        if not isinstance(k, str) or "." not in k:
+            continue
+        parts = [p for p in k.split(".") if p]
+        if len(parts) < 2:
+            continue
+
+        _set_nested(ctx, parts, v)
+        _set_nested(ctx, [p.capitalize() for p in parts], v)
+        _set_nested(ctx, [p.lower() for p in parts], v)
+
+    ble_val = ctx.get("ble")
+    beacons = ctx.get("beacon_ids") or (ble_val.get("beacons") if isinstance(ble_val, dict) else None)
     if beacons:
         ctx.setdefault("beacon_ids", beacons)
-        ble = ctx.setdefault("ble", {})
-        if isinstance(ble, dict):
-            ble.setdefault("beacons", beacons)
-        Ble = ctx.setdefault("Ble", {})
-        if isinstance(Ble, dict):
-            Ble.setdefault("Beacons", beacons)
+        for ble_key, beacon_key in [("ble", "beacons"), ("Ble", "Beacons"), ("BLE", "Beacons")]:
+            curr = ctx.get(ble_key)
+            if not isinstance(curr, dict):
+                ctx[ble_key] = {"_value": curr, "value": curr} if curr is not None else {}
+            ctx[ble_key].setdefault(beacon_key, beacons)
 
     return ctx
+
+
+_build_ctx = build_rule_context
+
 
 
 def _eval_rule(rule_str: str, ctx: dict) -> bool:

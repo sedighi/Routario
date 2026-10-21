@@ -34,14 +34,35 @@ services:
     networks:
       - routario-net
 
-  # ── PostgreSQL + PostGIS ─────────────────────────────────────────
+  # ── PostgreSQL 18 + PostGIS ──────────────────────────────────────
   postgres:
-    image: postgis/postgis:16-3.4-alpine
+    image: postgis/postgis:18-3.6-alpine
     restart: unless-stopped
+    shm_size: 1g
+    command: >
+      postgres
+      -c shared_buffers=2GB
+      -c effective_cache_size=6GB
+      -c work_mem=32MB
+      -c maintenance_work_mem=512MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c max_connections=150
+      -c enable_partition_pruning=on
+      -c enable_partitionwise_join=on
+      -c enable_partitionwise_aggregate=on
+      -c max_parallel_workers_per_gather=4
+      -c max_parallel_workers=8
+      -c max_parallel_maintenance_workers=4
     environment:
       POSTGRES_DB:       routario
       POSTGRES_USER:     routario
       POSTGRES_PASSWORD: routariopass
+      PGDATA:            /var/lib/postgresql/data
     volumes:
       - ./routario/postgres:/var/lib/postgresql/data
     networks:
@@ -52,11 +73,11 @@ services:
       timeout: 5s
       retries: 5
 
-  # ── Redis ────────────────────────────────────────────────────────
+  # ── Redis (v8) ───────────────────────────────────────────────────
   redis:
     image: redis:8-alpine
     restart: unless-stopped
-    command: redis-server --loglevel warning
+    command: redis-server --loglevel warning --maxmemory 512mb --maxmemory-policy allkeys-lru
     networks:
       - routario-net
     healthcheck:

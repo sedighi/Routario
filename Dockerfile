@@ -1,5 +1,5 @@
 # ── Stage 1: Builder ──────────────────────────────────────────────
-FROM python:3.15-slim AS builder
+FROM python:3.14-slim AS builder
 
 WORKDIR /build
 
@@ -15,8 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     proj-data \
     && rm -rf /var/lib/apt/lists/*
 
-ENV PROJ_DIR=/usr \
-    PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
+ENV PROJ_DIR=/usr
 
 COPY requirements.txt .
 
@@ -33,7 +32,7 @@ RUN pip install --prefix=/install \
 
 
 # ── Stage 2: Runtime ──────────────────────────────────────────────
-FROM python:3.15-slim
+FROM python:3.14-slim
 
 WORKDIR /app
 

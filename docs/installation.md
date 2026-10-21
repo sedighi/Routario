@@ -382,7 +382,7 @@ docker compose logs -f routario
 The project's multi-stage `Dockerfile` is optimized for production performance, small image footprint, and secure non-root execution:
 
 * **Stage 1 (Builder):**
-  - Uses `python:3.15-slim` with `build-essential`, `pkg-config`, `libpq-dev`, `libffi-dev`, `libssl-dev`, `libgeos-dev`, `libproj-dev`, and `proj-bin` to compile C/C++ extensions (`uvloop`, `asyncpg`, `cryptography`, `pyproj`, `shapely`).
+  - Uses `python:3.14-slim` with `build-essential`, `pkg-config`, `libpq-dev`, `libffi-dev`, `libssl-dev`, `libgeos-dev`, `libproj-dev`, and `proj-bin` to compile C/C++ extensions (`uvloop`, `asyncpg`, `cryptography`, `pyproj`, `shapely`).
   - Sets `PROJ_DIR=/usr` for geodetic projection compilation.
   - Installs all dependencies into an isolated `/install` prefix.
 * **Stage 2 (Runtime):**

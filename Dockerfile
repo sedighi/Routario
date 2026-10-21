@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     proj-data \
     && rm -rf /var/lib/apt/lists/*
 
-ENV PROJ_DIR=/usr
+ENV PROJ_DIR=/usr \
+    PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
 
 COPY requirements.txt .
 

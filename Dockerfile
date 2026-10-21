@@ -1,5 +1,5 @@
 # ── Stage 1: Builder ──────────────────────────────────────────────
-FROM python:3.14-slim AS builder
+FROM python:3.15-slim AS builder
 
 WORKDIR /build
 
@@ -10,11 +10,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
+
+ARG PIP_INDEX_URL="https://pypi.org/simple"
+ARG PIP_EXTRA_INDEX_URL=""
+
+RUN pip install --prefix=/install \
+    --default-timeout=120 \
+    --retries=10 \
+    --no-cache-dir \
+    -i ${PIP_INDEX_URL} \
+    ${PIP_EXTRA_INDEX_URL:+--extra-index-url $PIP_EXTRA_INDEX_URL} \
+    -r requirements.txt
 
 
 # ── Stage 2: Runtime ──────────────────────────────────────────────
-FROM python:3.14-slim
+FROM python:3.15-slim
 
 WORKDIR /app
 

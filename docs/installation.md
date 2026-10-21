@@ -382,7 +382,7 @@ docker compose logs -f routario
 The project's multi-stage `Dockerfile` is optimized for production performance, small image footprint, and secure non-root execution:
 
 * **Stage 1 (Builder):**
-  - Uses `python:3.14-slim` with `build-essential`, `libpq-dev`, and `libffi-dev` to compile C/C++ extensions (`uvloop`, `asyncpg`, `cryptography`, `pyproj`).
+  - Uses `python:3.15-slim` with `build-essential`, `libpq-dev`, and `libffi-dev` to compile C/C++ extensions (`uvloop`, `asyncpg`, `cryptography`, `pyproj`).
   - Installs all dependencies into an isolated `/install` prefix.
 * **Stage 2 (Runtime):**
   - Copies compiled packages from the builder stage without carrying over compilers or dev headers.
@@ -888,23 +888,72 @@ Install Nginx:
 Create the Nginx configuration `/etc/nginx/conf.d/routario.conf` (or `/etc/nginx/sites-available/routario` on Ubuntu):
 
 ```nginx
-# Map for WebSocket connection upgrading
+# Map for WebSocket connection upgrading (must be inside http block or at top of config)
 map $http_upgrade $connection_upgrade {
     default upgrade;
     ''      close;
 }
 
+# 1. HTTP to HTTPS Redirection
 server {
     listen 80;
+    listen [::]:80;
     server_name tracker.yourdomain.com;
 
-    client_max_body_size 50M;
+    return 301 https://$host$request_uri;
+}
 
+# 2. Production HTTPS Server
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name tracker.yourdomain.com;
+
+    # SSL certificates (or include snippets/ssl.conf)
+    ssl_certificate /etc/letsencrypt/live/tracker.yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/tracker.yourdomain.com/privkey.pem;
+
+    # Gzip Compression
+    gzip on;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_buffers 16 8k;
+    gzip_http_version 1.1;
+    gzip_min_length 256;
+    gzip_types
+        application/atom+xml
+        application/javascript
+        application/json
+        application/manifest+json
+        application/rss+xml
+        application/vnd.geo+json
+        application/x-web-app-manifest+json
+        application/xhtml+xml
+        application/xml
+        image/svg+xml
+        text/css
+        text/plain;
+
+    # Security Headers
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    # Logging
+    access_log /var/log/nginx/routario_access.log;
+    error_log /var/log/nginx/routario_error.log;
+
+    # Max upload size (accommodates Dashcam video uploads & company branding)
+    client_max_body_size 200M;
+
+    # ── Main Web Dashboard, REST API & WebSockets ───────────────
     location / {
         proxy_pass http://127.0.0.1:8000;
         proxy_http_version 1.1;
 
-        # WebSocket support
+        # WebSocket support (Live fleet map & real-time alerts)
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
 
@@ -914,9 +963,55 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
 
-        # Timeouts for persistent WebSockets
+        # Disable buffering for real-time WebSocket streams
+        proxy_buffering off;
+        proxy_cache off;
+
+        # Long timeouts for persistent WebSockets (24h)
         proxy_read_timeout 86400s;
         proxy_send_timeout 86400s;
+    }
+
+    # ── HTTP GPS Ingestion: OsmAnd / Mobile Tracking (Port 5055) ─
+    location /osmand {
+        proxy_pass http://127.0.0.1:5055/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_buffering off;
+    }
+
+    # ── HTTP GPS Ingestion: Flespi Webhooks (Port 5149) ──────────
+    location /flespi {
+        proxy_pass http://127.0.0.1:5149/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # ── High-Volume Dashcam Video Uploads ───────────────────────
+    location /api/dashcam/upload {
+        proxy_pass http://127.0.0.1:8000/api/dashcam/upload;
+        client_max_body_size 250M;
+        proxy_request_buffering off; # Direct streaming without disk spooling
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 180s;
+        proxy_send_timeout 180s;
+    }
+
+    # Deny access to hidden files
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
     }
 }
 ```
@@ -926,12 +1021,6 @@ Verify and restart Nginx:
 ```bash
 sudo nginx -t
 sudo systemctl reload nginx
-```
-
-Obtain a free SSL certificate with Let's Encrypt:
-
-```bash
-sudo certbot --nginx -d tracker.yourdomain.com
 ```
 
 ---

@@ -2,7 +2,7 @@
 # Python 3.10+
 
 # Core Async Runtime
-uvloop==0.22.1
+uvloop==0.22.1; sys_platform != 'win32'
 asyncio-mqtt==0.16.2
 
 # Web Framework
@@ -64,7 +64,7 @@ pywebpush==2.3.0
 webauthn==2.8.0
 
 # SIP Voice Call Notifications
-audioop-lts==0.2.2
+audioop-lts==0.2.2; python_version >= '3.13'
 pyVoIP==1.6.8
 
 # TTS Engines

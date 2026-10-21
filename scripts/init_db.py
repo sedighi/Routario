@@ -4,9 +4,20 @@ Run this to set up the database schema
 """
 import asyncio
 import sys
-from database import init_database
-from config import get_settings
-from schemas import UserCreate
+from pathlib import Path
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
+_app_dir = Path(__file__).resolve().parent.parent / "app"
+if str(_app_dir) not in sys.path:
+    sys.path.insert(0, str(_app_dir))
+
+from core.database import init_database
+from core.config import get_settings
+from models.schemas import UserCreate
 
 
 async def main():
@@ -32,7 +43,7 @@ async def main():
                     username="admin",
                     email="admin@example.com",
                     password="admin_password",  # Must be > 8 chars
-                    notification_channels={},
+                    notification_channels=[],
                     is_admin=True,
                 )
                 user = await db_service.create_user(default_user)

@@ -17,6 +17,10 @@ from typing import Any, Callable, Dict, List, Optional
 # Ensure that 'main' in sys.modules resolves to this module if executed as __main__
 sys.modules.setdefault("main", sys.modules[__name__])
 
+_app_dir = str(Path(__file__).resolve().parent)
+if _app_dir not in sys.path:
+    sys.path.insert(0, _app_dir)
+
 import httpx
 import jwt
 import uvicorn
@@ -1319,7 +1323,7 @@ def run_server():
         app,
         host="0.0.0.0",
         port=8000,
-        loop="uvloop",
+        loop="asyncio" if sys.platform == "win32" else "uvloop",
         ws_ping_interval=None,
         timeout_graceful_shutdown=2,
     ))

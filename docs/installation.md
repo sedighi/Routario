@@ -97,11 +97,11 @@ Navigate to `http://localhost:8000` and log in with the admin credentials you se
 
 ### Configuring the Valhalla region
 
-By default the compose file downloads the OSM extract for Greece. Change `tile_urls` in `docker-compose.yml` to the [Geofabrik extract](https://download.geofabrik.de) for your region before the first run:
+The `docker-compose.yml` file is configured with the Geofabrik extract (e.g. Iran: `https://download.geofabrik.de/asia/iran-latest.osm.pbf`). You can change `tile_urls` in `docker-compose.yml` to the [Geofabrik extract](https://download.geofabrik.de) for your region before the first run:
 
 ```yaml
 environment:
-  - tile_urls=https://download.geofabrik.de/europe/germany-latest.osm.pbf
+  - tile_urls=https://download.geofabrik.de/asia/iran-latest.osm.pbf
 ```
 
 ---
@@ -147,24 +147,44 @@ If Redis is not reachable at startup, Routario logs a warning and falls back to 
 
 ## Bare-Metal (Python + PostgreSQL)
 
-If you prefer to run without Docker but want PostgreSQL:
+If you prefer to run without Docker:
 
-```bash
-# Set up the database
-createuser -P routario
-createdb -O routario routario
-psql routario -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+=== "Linux / macOS"
 
-# Install dependencies
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+    ```bash
+    # Set up the database
+    createuser -P routario
+    createdb -O routario routario
+    psql routario -c "CREATE EXTENSION IF NOT EXISTS postgis;"
 
-# Configure and run
-export DATABASE_URL=postgresql+asyncpg://routario:routariopass@localhost/routario
-export SECRET_KEY=your-long-random-secret
-python app/main.py
-```
+    # Install dependencies
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+
+    # Configure and run
+    export DATABASE_URL=postgresql+asyncpg://routario:routariopass@localhost/routario
+    export SECRET_KEY=your-long-random-secret
+    python app/main.py
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    # Create virtual environment & activate
+    python -m venv .venv
+    .\.venv\Scripts\Activate.ps1
+
+    # Install dependencies
+    pip install -r requirements.txt
+
+    # Configure .env or environment variables
+    # (e.g. DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/routario)
+    python app/main.py
+    ```
+
+!!! note "Platform Compatibility"
+    Routario supports both Windows and Linux/macOS environments. On Windows, Uvicorn runs on standard `asyncio`, whereas on Linux it automatically leverages `uvloop`. If Redis is not available, the WebSocket broadcaster seamlessly falls back to in-process mode.
 
 !!! warning "Production"
     For production deployments, put Routario behind a reverse proxy (nginx, Caddy) and use a process manager such as **systemd** or **supervisor** to keep it running.

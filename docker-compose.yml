@@ -79,7 +79,7 @@ services:
     volumes:
       - ./routario/valhalla:/custom_files
     environment:
-      - tile_urls=https://download.geofabrik.de/europe/greece-latest.osm.pbf
+      - tile_urls=https://download.geofabrik.de/asia/iran-latest.osm.pbf
       - build_admins=True
       - build_time_zones=True
     ports:

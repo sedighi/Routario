@@ -4,7 +4,9 @@ FROM python:3.14-slim AS builder
 WORKDIR /build
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
+    build-essential \
+    libpq-dev \
+    libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
@@ -20,16 +22,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     espeak \
     ffmpeg \
     gosu \
+    libpq5 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /install /usr/local
 COPY app/  ./app/
 COPY web/  ./web/
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
 RUN addgroup --system routario && adduser --system --ingroup routario routario
-RUN chown -R routario:routario /app
+RUN mkdir -p /app/web/uploads && chown -R routario:routario /app
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \

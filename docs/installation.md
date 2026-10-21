@@ -179,7 +179,10 @@ services:
 
   # ── Routario Application ─────────────────────────────────────────
   routario:
-    image: bkbillybk/routario:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: routario:local
     restart: unless-stopped
     depends_on:
       postgres:
@@ -355,12 +358,46 @@ VALHALLA_ENABLED=true
 GEOCODING_ENABLED=false
 ```
 
-### 4. Start the Stack
+### 4. Build and Start the Stack
+
+To ensure all your local code customizations (e.g. customized protocols, RTL styling, translations, or modified endpoints) are deployed into the container, use the `--build` flag:
 
 ```bash
-docker compose up -d
+# Build the local Docker image and start all services in the background
+docker compose up -d --build
+
+# Inspect running logs
 docker compose logs -f routario
 ```
+
+!!! tip "Local Build vs. Remote Image"
+    By setting `build: .` and `image: routario:local`, Docker Compose will compile your local repository using the project's [Dockerfile](file:///c:/home/develop/test/46-routario/Dockerfile) instead of pulling the generic image from Docker Hub. Any future code modifications can be rebuilt and deployed with:
+    ```bash
+    docker compose build routario
+    docker compose up -d routario
+    ```
+
+### 5. Dockerfile Architecture
+
+The project's multi-stage `Dockerfile` is optimized for production performance, small image footprint, and secure non-root execution:
+
+* **Stage 1 (Builder):**
+  - Uses `python:3.14-slim` with `build-essential`, `libpq-dev`, and `libffi-dev` to compile C/C++ extensions (`uvloop`, `asyncpg`, `cryptography`, `pyproj`).
+  - Installs all dependencies into an isolated `/install` prefix.
+* **Stage 2 (Runtime):**
+  - Copies compiled packages from the builder stage without carrying over compilers or dev headers.
+  - Installs runtime utilities: `espeak` (TTS voice alerts), `ffmpeg` (dashcam clips), `libpq5` (PostgreSQL client libraries), and `gosu` (privilege drop).
+  - Normalizes line endings on `entrypoint.sh` via `sed -i 's/\r$//'` to prevent CRLF execution errors when cloned on Windows hosts.
+  - Creates and drops privileges to a dedicated system user `routario` (UID/GID isolated) while managing permissions for `/app/web/uploads`.
+
+!!! note "Development Live Reload (Optional)"
+    If you want live code reloading during rapid development without rebuilding the Docker image on every file edit, you can mount your local code into the container by adding volume mounts to `docker-compose.yml`:
+    ```yaml
+    volumes:
+      - ./app:/app/app
+      - ./web:/app/web
+      - ./routario/uploads:/app/web/uploads
+    ```
 
 ---
 
@@ -983,7 +1020,7 @@ sudo -u postgres pg_restore -d routario --clean --if-exists /var/backups/routari
     ```bash
     cd /opt/routario
     git pull
-    docker compose pull
+    docker compose build routario
     docker compose up -d
     ```
 

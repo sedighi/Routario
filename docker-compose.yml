@@ -2,7 +2,10 @@ services:
 
   # ── Routario Application ─────────────────────────────────────────
   routario:
-    image: bkbillybk/routario:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: routario:local
     restart: unless-stopped
     depends_on:
       postgres:

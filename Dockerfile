@@ -5,9 +5,17 @@ WORKDIR /build
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    pkg-config \
     libpq-dev \
     libffi-dev \
+    libssl-dev \
+    libgeos-dev \
+    libproj-dev \
+    proj-bin \
+    proj-data \
     && rm -rf /var/lib/apt/lists/*
+
+ENV PROJ_DIR=/usr
 
 COPY requirements.txt .
 
@@ -33,7 +41,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     gosu \
     libpq5 \
+    proj-bin \
+    proj-data \
     && rm -rf /var/lib/apt/lists/*
+
+ENV PROJ_DATA=/usr/share/proj
 
 COPY --from=builder /install /usr/local
 COPY app/  ./app/

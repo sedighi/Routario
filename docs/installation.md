@@ -382,11 +382,13 @@ docker compose logs -f routario
 The project's multi-stage `Dockerfile` is optimized for production performance, small image footprint, and secure non-root execution:
 
 * **Stage 1 (Builder):**
-  - Uses `python:3.15-slim` with `build-essential`, `libpq-dev`, and `libffi-dev` to compile C/C++ extensions (`uvloop`, `asyncpg`, `cryptography`, `pyproj`).
+  - Uses `python:3.15-slim` with `build-essential`, `pkg-config`, `libpq-dev`, `libffi-dev`, `libssl-dev`, `libgeos-dev`, `libproj-dev`, and `proj-bin` to compile C/C++ extensions (`uvloop`, `asyncpg`, `cryptography`, `pyproj`, `shapely`).
+  - Sets `PROJ_DIR=/usr` for geodetic projection compilation.
   - Installs all dependencies into an isolated `/install` prefix.
 * **Stage 2 (Runtime):**
   - Copies compiled packages from the builder stage without carrying over compilers or dev headers.
-  - Installs runtime utilities: `espeak` (TTS voice alerts), `ffmpeg` (dashcam clips), `libpq5` (PostgreSQL client libraries), and `gosu` (privilege drop).
+  - Installs runtime utilities: `espeak` (TTS voice alerts), `ffmpeg` (dashcam clips), `libpq5` (PostgreSQL client libraries), `proj-bin`, `proj-data` (geodetic projection database), and `gosu` (privilege drop).
+  - Sets `PROJ_DATA=/usr/share/proj` for runtime coordinate transforms.
   - Normalizes line endings on `entrypoint.sh` via `sed -i 's/\r$//'` to prevent CRLF execution errors when cloned on Windows hosts.
   - Creates and drops privileges to a dedicated system user `routario` (UID/GID isolated) while managing permissions for `/app/web/uploads`.
 

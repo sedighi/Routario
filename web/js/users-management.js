@@ -199,7 +199,7 @@ function openUserModal(userId = null) {
     _usrEditing = userId ? _usrUsers.find(u => u.id === userId) : null;
     const isNew = !_usrEditing;
 
-    document.getElementById('userModalTitle').textContent = isNew ? 'Add User' : 'Edit User';
+    document.getElementById('userModalTitle').textContent = isNew ? window.t('Add User', 'Add User') : window.t('Edit User', 'Edit User');
 
     const usernameEl = document.getElementById('userModalUsername');
     usernameEl.value    = _usrEditing?.username || '';
@@ -210,7 +210,7 @@ function openUserModal(userId = null) {
     const phoneEl = document.getElementById('userModalPhone');
     if (phoneEl) phoneEl.value = _usrEditing?.phone_number || '';
     document.getElementById('userModalPassword').value = '';
-    document.getElementById('userPasswordLabel').textContent = isNew ? 'Password *' : 'Password (leave blank to keep)';
+    document.getElementById('userPasswordLabel').textContent = isNew ? window.t('Password *', 'Password *') : window.t('Password (leave blank to keep)', 'Password (leave blank to keep)');
     document.getElementById('userModalUnits').value = _usrEditing?.units || 'metric';
     usrRenderCurrencyOptions(_usrEditing?.currency || 'EUR');
     document.getElementById('userModalCurrency').value = _usrEditing?.currency || 'EUR';
@@ -219,11 +219,11 @@ function openUserModal(userId = null) {
 
     const roleSelect = document.getElementById('userModalRole');
     roleSelect.innerHTML = _usrIsAdmin
-        ? `<option value="user">User</option>
-           <option value="company_admin">Company Admin</option>
-           <option value="admin">Super Admin</option>`
-        : `<option value="user">User</option>
-           <option value="company_admin">Company Admin</option>`;
+        ? `<option value="user">${window.t('User', 'User')}</option>
+           <option value="company_admin">${window.t('Company Admin', 'Company Admin')}</option>
+           <option value="admin">${window.t('Super Admin', 'Super Admin')}</option>`
+        : `<option value="user">${window.t('User', 'User')}</option>
+           <option value="company_admin">${window.t('Company Admin', 'Company Admin')}</option>`;
     if (_usrEditing) {
         roleSelect.value = _usrEditing.is_admin ? 'admin' : _usrEditing.is_company_admin ? 'company_admin' : 'user';
     }
@@ -233,7 +233,7 @@ function openUserModal(userId = null) {
 
     if (_usrIsAdmin) {
         const sel = document.getElementById('userModalCompany');
-        sel.innerHTML = '<option value="">— Select company —</option>';
+        sel.innerHTML = `<option value="">${window.t('— Select company —', '— Select company —')}</option>`;
         _usrCompanies.forEach(c => {
             const opt = document.createElement('option');
             opt.value = c.id;
@@ -250,6 +250,7 @@ function openUserModal(userId = null) {
     document.getElementById('userDeleteBtn').style.display =
         (isNew || _usrEditing?.id === _usrMyId) ? 'none' : 'inline-flex';
     document.getElementById('userModal').classList.add('active');
+    if (window.i18n?.translateDOM) window.i18n.translateDOM();
 }
 
 function usrRenderCurrencyOptions(selected = 'EUR') {

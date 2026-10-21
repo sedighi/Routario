@@ -21,6 +21,9 @@
     <link rel="stylesheet" href="css/device-management.css">
     <link rel="stylesheet" href="css/app-lock.css">
     <link rel="stylesheet" href="css/system-update.css">
+    <link rel="stylesheet" href="css/rtl.css?v=152">
+    <script src="js/persian-calendar.js"></script>
+    <script src="js/i18n.js?v=152"></script>
     <script src="js/settings-nav.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -1516,6 +1519,7 @@
             <div class="search-input-wrap">
                 <span class="search-icon"><i class="mdi mdi-magnify"></i></span>
                 <input type="text" id="schedSearch" class="search-input" placeholder="Search by name, type, frequency…"
+                       data-i18n-placeholder="Search by name, type, frequency…"
                        oninput="filterSchedules()">
             </div>
             <span class="devices-count" id="schedCount"></span>
@@ -1526,14 +1530,14 @@
                 <tbody id="schedBody"></tbody>
             </table>
         </div>
-        <div class="no-data" id="schedNoData" style="display:none;">No schedules yet. Use the gear menu to create one.</div>
+        <div class="no-data" id="schedNoData" data-i18n="No schedules yet. Use the gear menu to create one." style="display:none;">No schedules yet. Use the gear menu to create one.</div>
     </div><!-- /panelSchedules -->
 
     <div id="panelHealth" style="display:none;">
         <div class="devices-search-bar">
             <div class="search-input-wrap">
                 <span class="search-icon"><i class="mdi mdi-magnify"></i></span>
-                <input type="text" id="healthSearch" class="search-input" placeholder="Search health checks..." oninput="renderHealthTable()">
+                <input type="text" id="healthSearch" class="search-input" placeholder="Search health checks..." data-i18n-placeholder="Search health checks..." oninput="renderHealthTable()">
             </div>
             <span class="devices-count" id="healthCount"></span>
         </div>
@@ -1541,9 +1545,9 @@
             <table class="devices-table health-table">
                 <thead>
                     <tr>
-                        <th data-sort="name" data-sort-dir="asc" onclick="sortHealth('name')">Check</th>
-                        <th data-sort="status" onclick="sortHealth('status')">Status</th>
-                        <th data-sort="details" onclick="sortHealth('details')">Details</th>
+                        <th data-sort="name" data-sort-dir="asc" onclick="sortHealth('name')" data-i18n="Check">Check</th>
+                        <th data-sort="status" onclick="sortHealth('status')" data-i18n="Status">Status</th>
+                        <th data-sort="details" onclick="sortHealth('details')" data-i18n="Details">Details</th>
                     </tr>
                 </thead>
                 <tbody id="healthTableBody"></tbody>
@@ -1556,7 +1560,7 @@
         <div class="devices-search-bar">
             <div class="search-input-wrap">
                 <span class="search-icon"><i class="mdi mdi-magnify"></i></span>
-                <input type="text" id="runtimeLogSearch" class="search-input" placeholder="Search runtime logs..." oninput="renderRuntimeLogs()">
+                <input type="text" id="runtimeLogSearch" class="search-input" placeholder="Search runtime logs..." data-i18n-placeholder="Search runtime logs..." oninput="renderRuntimeLogs()">
             </div>
             <span class="devices-count" id="runtimeLogCount"></span>
         </div>
@@ -1564,10 +1568,10 @@
             <table class="devices-table runtime-log-table">
                 <thead>
                     <tr>
-                        <th>Time</th>
-                        <th>Level</th>
-                        <th>Logger</th>
-                        <th>Message</th>
+                        <th data-i18n="Time">Time</th>
+                        <th data-i18n="Level">Level</th>
+                        <th data-i18n="Logger">Logger</th>
+                        <th data-i18n="Message">Message</th>
                     </tr>
                 </thead>
                 <tbody id="runtimeLogTableBody"></tbody>
@@ -1671,7 +1675,7 @@
     <div class="modal-backdrop" onclick="closeScheduleModal()"></div>
     <div class="modal-content" id="schedModalContent">
         <div class="modal-header">
-            <h3 class="modal-title" id="schedModalTitle">New Schedule</h3>
+            <h3 class="modal-title" id="schedModalTitle" data-i18n="New Schedule">New Schedule</h3>
             <button class="modal-close" onclick="closeScheduleModal()">&times;</button>
         </div>
         <div class="modal-scrollable">
@@ -1679,8 +1683,8 @@
 
             <!-- Name: full width above the two columns -->
             <div class="form-group" style="margin-bottom:1rem;">
-                <label class="form-label">Schedule Name<span class="sched-required-mark">*</span></label>
-                <input type="text" id="sfName" class="form-input" placeholder="e.g. Monthly Fleet Summary" maxlength="200" required>
+                <label class="form-label"><span data-i18n="Schedule Name">Schedule Name</span><span class="sched-required-mark">*</span></label>
+                <input type="text" id="sfName" class="form-input" placeholder="e.g. Monthly Fleet Summary" data-i18n-placeholder="e.g. Monthly Fleet Summary" maxlength="200" required>
             </div>
 
             <div class="sched-two-col">
@@ -1688,14 +1692,14 @@
                 <!-- ── Left column: what to report ─────────────────── -->
                 <div class="sched-col">
                     <div class="form-group">
-                        <label class="form-label">Send To</label>
+                        <label class="form-label" data-i18n="Send To">Send To</label>
                         <div id="sfChannelList" style="display:flex;flex-wrap:wrap;gap:0.5rem;"></div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Report Type</label>
+                        <label class="form-label" data-i18n="Report Type">Report Type</label>
                         <select id="sfType" class="form-input" onchange="onSchedTypeChange()">
-                            <option value="">Loading reports...</option>
+                            <option value="" data-i18n="Loading reports...">Loading reports...</option>
                         </select>
                     </div>
 
@@ -1703,36 +1707,36 @@
                         <label class="form-label">&nbsp;</label>
                         <label class="form-input" style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;min-width:unset;">
                             <input type="checkbox" id="sfHistorical" onchange="onSchedHistChange()" style="accent-color:var(--accent-primary);">
-                            Historical data
+                            <span data-i18n="Historical data">Historical data</span>
                         </label>
                     </div>
 
                     <div class="form-group" id="sfDateRangeGroup">
-                        <label class="form-label">Date Range</label>
+                        <label class="form-label" data-i18n="Date Range">Date Range</label>
                         <select id="sfDateRange" class="form-input">
-                            <option value="last_day">Last day</option>
-                            <option value="last_7_days">Last 7 days</option>
-                            <option value="last_14_days">Last 14 days</option>
-                            <option value="last_30_days" selected>Last 30 days</option>
-                            <option value="last_calendar_month">Last calendar month</option>
-                            <option value="last_quarter">Last quarter</option>
-                            <option value="last_year">Last year</option>
+                            <option value="last_day" data-i18n="Last day">Last day</option>
+                            <option value="last_7_days" data-i18n="Last 7 days">Last 7 days</option>
+                            <option value="last_14_days" data-i18n="Last 14 days">Last 14 days</option>
+                            <option value="last_30_days" selected data-i18n="Last 30 days">Last 30 days</option>
+                            <option value="last_calendar_month" data-i18n="Last calendar month">Last calendar month</option>
+                            <option value="last_quarter" data-i18n="Last quarter">Last quarter</option>
+                            <option value="last_year" data-i18n="Last year">Last year</option>
                         </select>
                     </div>
 
                     <div id="sfControlsGroup" style="display:contents;"></div>
 
                     <div class="form-group">
-                        <label class="form-label">Vehicles</label>
+                        <label class="form-label" data-i18n="Vehicles">Vehicles</label>
                         <div class="veh-select-wrap" id="sfVehWrap">
                             <button type="button" class="form-input veh-select-btn" onclick="toggleSfVeh(event)">
-                                <span id="sfVehLabel">All vehicles</span>
+                                <span id="sfVehLabel" data-i18n="All vehicles">All vehicles</span>
                                 <i class="mdi mdi-chevron-down" style="font-size:1rem;flex-shrink:0;"></i>
                             </button>
                             <div class="veh-select-dropdown" id="sfVehDropdown">
                                 <label class="veh-opt">
                                     <input type="checkbox" id="sfAllVeh" checked onchange="toggleSfAllVeh(this)">
-                                    <span>All vehicles</span>
+                                    <span data-i18n="All vehicles">All vehicles</span>
                                 </label>
                                 <div class="veh-opt-divider"></div>
                                 <div id="sfVehList"></div>
@@ -1741,16 +1745,16 @@
                     </div>
 
                     <div class="form-group" id="sfUserGroup" style="display:none;">
-                        <label class="form-label">Users</label>
+                        <label class="form-label" data-i18n="Users">Users</label>
                         <div class="veh-select-wrap" id="sfUserWrap">
                             <button type="button" class="form-input veh-select-btn" onclick="toggleSfUser(event)">
-                                <span id="sfUserLabel">All users</span>
+                                <span id="sfUserLabel" data-i18n="All users">All users</span>
                                 <i class="mdi mdi-chevron-down" style="font-size:1rem;flex-shrink:0;"></i>
                             </button>
                             <div class="veh-select-dropdown" id="sfUserDropdown">
                                 <label class="veh-opt">
                                     <input type="checkbox" id="sfAllUser" checked onchange="toggleSfAllUser(this)">
-                                    <span>All users</span>
+                                    <span data-i18n="All users">All users</span>
                                 </label>
                                 <div class="veh-opt-divider"></div>
                                 <div id="sfUserList"></div>
@@ -1762,55 +1766,55 @@
                 <!-- ── Right column: when to run ───────────────────── -->
                 <div class="sched-col">
                     <div class="form-group sf-trigger-field">
-                        <label class="form-label">Trigger</label>
+                        <label class="form-label" data-i18n="Trigger">Trigger</label>
                         <select id="sfTriggerType" class="form-input" onchange="onSchedTriggerChange()">
-                            <option value="">Loading triggers...</option>
+                            <option value="" data-i18n="Loading triggers...">Loading triggers...</option>
                         </select>
                     </div>
 
                     <div id="sfTriggerOptionsGroup" class="sched-trigger-options"></div>
 
                     <div class="form-group sf-time-field">
-                        <label class="form-label">Frequency</label>
+                        <label class="form-label" data-i18n="Frequency">Frequency</label>
                         <select id="sfFreq" class="form-input" onchange="onSchedFreqChange()">
-                            <option value="daily">Daily</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="monthly">Monthly</option>
+                            <option value="daily" data-i18n="Daily">Daily</option>
+                            <option value="weekly" data-i18n="Weekly">Weekly</option>
+                            <option value="monthly" data-i18n="Monthly">Monthly</option>
                         </select>
                     </div>
 
                     <div class="form-group sf-time-field">
-                        <label class="form-label">Run Time</label>
+                        <label class="form-label" data-i18n="Run Time">Run Time</label>
                         <input type="time" id="sfTime" class="form-input" value="07:00" required>
                     </div>
 
                     <div class="form-group" id="sfDowGroup" style="display:none;">
-                        <label class="form-label">Day of Week</label>
+                        <label class="form-label" data-i18n="Day of Week">Day of Week</label>
                         <select id="sfDow" class="form-input">
-                            <option value="0">Monday</option>
-                            <option value="1">Tuesday</option>
-                            <option value="2">Wednesday</option>
-                            <option value="3">Thursday</option>
-                            <option value="4">Friday</option>
-                            <option value="5">Saturday</option>
-                            <option value="6">Sunday</option>
+                            <option value="0" data-i18n="Monday">Monday</option>
+                            <option value="1" data-i18n="Tuesday">Tuesday</option>
+                            <option value="2" data-i18n="Wednesday">Wednesday</option>
+                            <option value="3" data-i18n="Thursday">Thursday</option>
+                            <option value="4" data-i18n="Friday">Friday</option>
+                            <option value="5" data-i18n="Saturday">Saturday</option>
+                            <option value="6" data-i18n="Sunday">Sunday</option>
                         </select>
                     </div>
 
                     <div class="form-group" id="sfDomGroup" style="display:none;">
-                        <label class="form-label">Day of Month</label>
+                        <label class="form-label" data-i18n="Day of Month">Day of Month</label>
                         <input type="number" id="sfDom" class="form-input" value="1" min="1" max="28">
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Keep Last N Runs</label>
+                        <label class="form-label" data-i18n="Keep Last N Runs">Keep Last N Runs</label>
                         <input type="number" id="sfKeep" class="form-input" value="10" min="1" max="100">
                     </div>
 
                     <div class="form-group">
                         <label class="form-input" style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;min-width:unset;">
                             <input type="checkbox" id="sfActive" checked style="accent-color:var(--accent-primary);">
-                            Active
+                            <span data-i18n="Active">Active</span>
                         </label>
                     </div>
 
@@ -1820,12 +1824,12 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" id="sfDeleteBtn" onclick="deleteScheduleFromModal()"
-                    style="color:var(--accent-danger);display:none;">
+                    style="color:var(--accent-danger);display:none;" data-i18n="Delete">
                 <i class="mdi mdi-delete"></i> Delete
             </button>
             <div style="display:flex;gap:0.75rem;margin-left:auto;">
-                <button class="btn btn-secondary" onclick="closeScheduleModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveSchedule()">
+                <button class="btn btn-secondary" onclick="closeScheduleModal()" data-i18n="Cancel">Cancel</button>
+                <button class="btn btn-primary" onclick="saveSchedule()" data-i18n="Save">
                     <i class="mdi mdi-content-save"></i> Save
                 </button>
             </div>

@@ -313,6 +313,19 @@ body.light-theme::before {
     pointer-events: none;
 }
 
+[dir="rtl"] .dashboard.sidebar-hidden .sidebar,
+html[dir="rtl"] .dashboard.sidebar-hidden .sidebar,
+body.rtl .dashboard.sidebar-hidden .sidebar {
+    transform: translateX(100%);
+    pointer-events: none;
+}
+
+[dir="rtl"] .dashboard:not(.sidebar-hidden) .sidebar,
+html[dir="rtl"] .dashboard:not(.sidebar-hidden) .sidebar,
+body.rtl .dashboard:not(.sidebar-hidden) .sidebar {
+    transform: translateX(0);
+}
+
 .map-light .sidebar,
 .map-light .header {
     background: color-mix(in srgb, var(--bg-secondary) 94%, transparent);
@@ -2887,7 +2900,7 @@ body.light-theme .toast-close:hover {
     padding: 0.575rem 0.75rem;
     border-radius: 9px;
     font-family: var(--font-display);
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     font-weight: 500;
     color: var(--text-primary);
     text-decoration: none;
@@ -2897,6 +2910,7 @@ body.light-theme .toast-close:hover {
     transition: background var(--transition-fast), color var(--transition-fast);
     width: 100%;
     text-align: left;
+    white-space: nowrap;
 }
 
 .header-menu-item:hover {
@@ -3696,6 +3710,13 @@ path.leaflet-interactive:focus-visible,
     gap: 4px;
 }
 
+[dir="rtl"] .map-ctrl-group,
+html[dir="rtl"] .map-ctrl-group,
+body.rtl .map-ctrl-group {
+    right: auto;
+    left: 1rem;
+}
+
 .map-ctrl-bar {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -3742,6 +3763,14 @@ path.leaflet-interactive:focus-visible,
     flex-direction: column;
     gap: 2px;
     z-index: 1001;
+}
+
+[dir="rtl"] .map-ctrl-flyout,
+html[dir="rtl"] .map-ctrl-flyout,
+body.rtl .map-ctrl-flyout {
+    right: auto;
+    left: calc(100% + 8px);
+    box-shadow: 3px 3px 12px rgba(0,0,0,0.5);
 }
 
 .map-ctrl-flyout.open {

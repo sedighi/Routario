@@ -763,13 +763,15 @@ function getHeaderOffset() {
 }
 window.getHeaderOffset = getHeaderOffset;
 
-// Shifts a latlng left/up so it appears centred in the visible map area (right of sidebar / between header and bottom bar).
+// Shifts a latlng left/up so it appears centred in the visible map area (right of sidebar in LTR / left of sidebar in RTL / between header and bottom bar).
 function applyLatLngOffset(latlng, zoom) {
     const offset = getSidebarOffset();
     const bottomOffset = getSidebarBottomOffset();
     const topOffset = getHeaderOffset();
     const point = map.project(L.latLng(latlng), zoom);
-    return map.unproject(L.point(point.x - offset / 2, point.y + (bottomOffset - topOffset) / 2), zoom);
+    const isRtl = document.documentElement.dir === 'rtl' || document.documentElement.lang === 'fa';
+    const xShift = isRtl ? (offset / 2) : (-offset / 2);
+    return map.unproject(L.point(point.x + xShift, point.y + (bottomOffset - topOffset) / 2), zoom);
 }
 window.applyLatLngOffset = applyLatLngOffset;
 
@@ -785,9 +787,10 @@ function _ensurePopupInVisibleMap(deviceId, targetLatLng = null) {
     const destLatLng = targetLatLng || markers[deviceId].getLatLng();
     const markerPt = map.latLngToContainerPoint(destLatLng);
 
+    const isRtl = document.documentElement.dir === 'rtl' || document.documentElement.lang === 'fa';
     const visibleWidth = mapSize.x - sidebarOffset;
     const visibleHeight = mapSize.y - sidebarBottomOffset - headerOffset;
-    const visibleCenterX = sidebarOffset + visibleWidth / 2;
+    const visibleCenterX = isRtl ? (visibleWidth / 2) : (sidebarOffset + visibleWidth / 2);
     const visibleCenterY = headerOffset + visibleHeight / 2;
 
     const popup = markers[deviceId].getPopup();
@@ -801,7 +804,12 @@ function _ensurePopupInVisibleMap(deviceId, targetLatLng = null) {
     const hasEnoughRoom = (visibleWidth >= minRequiredWidth) && (visibleHeight >= minRequiredHeight);
 
     // Is the vehicle marker itself inside the visible viewport?
-    const isVehicleOnVisibleMap = (
+    const isVehicleOnVisibleMap = isRtl ? (
+        markerPt.x >= 0 &&
+        markerPt.x <= (mapSize.x - sidebarOffset) &&
+        markerPt.y >= headerOffset &&
+        markerPt.y <= (mapSize.y - sidebarBottomOffset)
+    ) : (
         markerPt.x >= sidebarOffset &&
         markerPt.x <= mapSize.x &&
         markerPt.y >= headerOffset &&

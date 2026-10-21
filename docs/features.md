@@ -232,3 +232,18 @@ Pull live positions from third-party GPS platforms without reconfiguring your de
 - **Billing, audit, runtime logs, and health** — manage super-admin billing plans, review audit logs, inspect live runtime logs, and check deployment readiness.
 
 [:octicons-arrow-right-24: Administration Guide](administration.md)
+
+---
+
+## Bilingual Support & RTL (Persian / Farsi)
+
+Routario includes native bilingual support for English and Persian (Farsi) with full Right-to-Left (RTL) layout capabilities:
+
+- **Language Switcher** — toggle between English (LTR) and Persian (RTL) with a single click from the navigation header, user dropdown, or login screen.
+- **Local Vazirmatn Typography** — self-hosted local Vazirmatn font files (`.woff2`) served directly from local assets, requiring zero external network requests.
+- **Full RTL Layout Adaptation** — sidebars, inputs, tables, modals, and navigation controls automatically mirror and align in RTL mode. Sidebar collapsing transforms dynamically adjust to slide off-screen to the right in RTL mode (`transform: translateX(100%)`).
+- **Persian / Shamsi (Jalali) Calendar** — native, offline Jalali calendar calculation engine (`web/js/persian-calendar.js`). All dates, tables, logbooks, and timestamps automatically format in Shamsi when Persian language is active.
+- **Interactive Persian Date Picker** — an elegant, glassmorphic Jalali date & time picker modal supporting month/year switching, day grids, Friday holiday styling, and hour/minute selectors for history and report queries. Transparently converts between Shamsi display dates and Gregorian timestamps for backend APIs.
+- **Comprehensive Admin & Management RTL** — complete localization and right-to-left layout for all administration pages (`management.html`, `reports.html`, `user-settings.html`), including tabs, modals (Add/Edit Device, Company, User, Driver, SIM Card), forms, and data tables.
+- **Persistent Preferences** — language selection is preserved in `localStorage` and can also be selected in **User Settings &rarr; Preferences & Regional**.
+

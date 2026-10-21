@@ -75,8 +75,10 @@ async function _loadSimCards() {
         return;
     }
     const tbody = document.getElementById('simCardsTableBody');
+    const isFa = (window.i18n?.getLanguage?.() === 'fa');
     if (tbody && !_simCards.length) {
-        tbody.innerHTML = `<tr><td colspan="${_simIsAdmin ? 9 : 8}" style="text-align:center;padding:3rem;color:var(--text-muted);"><div class="loading" style="margin:0 auto 1rem;"></div>Loading SIM cards…</td></tr>`;
+        const loadMsg = isFa ? 'بارگذاری سیم‌کارت‌ها…' : 'Loading SIM cards…';
+        tbody.innerHTML = `<tr><td colspan="${_simIsAdmin ? 9 : 8}" style="text-align:center;padding:3rem;color:var(--text-muted);"><div class="loading" style="margin:0 auto 1rem;"></div>${loadMsg}</td></tr>`;
     }
     try {
         const res = await apiFetch(`${API_BASE}/sim-cards`);
@@ -152,14 +154,16 @@ function _renderSimTable() {
     });
 
     const countEl = document.getElementById('simCardCount');
-    if (countEl) countEl.textContent = `${list.length} SIM card${list.length !== 1 ? 's' : ''}`;
+    const isFa = (window.i18n?.getLanguage?.() === 'fa');
+    if (countEl) countEl.textContent = isFa ? `${list.length} سیم‌کارت` : `${list.length} SIM card${list.length !== 1 ? 's' : ''}`;
 
     const colSpan = _simIsAdmin ? 7 : 6;
     const tbody = document.getElementById('simCardsTableBody');
     if (!tbody) return;
 
     if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center;padding:3rem;color:var(--text-muted);"><div style="font-size:2.5rem;margin-bottom:0.75rem;"><i class="mdi mdi-sim"></i></div>No SIM cards found</td></tr>`;
+        const emptyMsg = isFa ? 'هیچ سیم‌کارتی یافت نشد' : 'No SIM cards found';
+        tbody.innerHTML = `<tr><td colspan="${colSpan}" style="text-align:center;padding:3rem;color:var(--text-muted);"><div style="font-size:2.5rem;margin-bottom:0.75rem;"><i class="mdi mdi-sim"></i></div>${emptyMsg}</td></tr>`;
         return;
     }
 
@@ -237,14 +241,19 @@ function setSimInputDate(date) {
     el.dataset.iso = ymd;
     const isDef = isSimDateFormatDefault();
     const wrap = el.closest('.datetime-picker-wrap');
-    if (isDef) {
+    const isFa = (localStorage.getItem('app_lang') === 'fa') || (document.documentElement.lang === 'fa');
+    if (isDef && !isFa) {
         if (el.type !== 'date') el.type = 'date';
         if (wrap) wrap.classList.add('is-native');
         el.value = ymd;
     } else {
         if (el.type !== 'text') el.type = 'text';
         if (wrap) wrap.classList.remove('is-native');
-        el.value = typeof formatDateValue === 'function' ? formatDateValue(d) : ymd;
+        if (isFa && typeof PersianCalendar !== 'undefined' && typeof PersianCalendar.formatJalaliDate === 'function') {
+            el.value = PersianCalendar.formatJalaliDate(d, { usePersianDigits: false });
+        } else {
+            el.value = typeof formatDateValue === 'function' ? formatDateValue(d) : ymd;
+        }
         const picker = document.getElementById('simExpiryDatePicker');
         if (picker) picker.value = ymd;
     }
@@ -270,8 +279,9 @@ function getSimInputIso() {
 
 function openAddSimCardModal() {
     _editingSimCard = null;
-    document.getElementById('simCardModalTitle').textContent = 'Add SIM Card';
-    document.getElementById('simSubmitBtnText').textContent = 'Add SIM Card';
+    const isFa = (window.i18n?.currentLang || localStorage.getItem('routario_lang') || 'fa') === 'fa';
+    document.getElementById('simCardModalTitle').textContent = isFa ? 'افزودن سیم‌کارت' : 'Add SIM Card';
+    document.getElementById('simSubmitBtnText').textContent = isFa ? 'افزودن سیم‌کارت' : 'Add SIM Card';
     document.getElementById('simDeleteBtn').style.display = 'none';
 
     document.getElementById('simAccountLabel').value = '';
@@ -286,7 +296,7 @@ function openAddSimCardModal() {
 
     // Populate Provider Select with optional manual/none choice
     const provSel = document.getElementById('simProviderSelect');
-    provSel.innerHTML = '<option value="">— None (Manual SIM) —</option>' +
+    provSel.innerHTML = (isFa ? '<option value="">— بدون ارائه‌دهنده (دستی) —</option>' : '<option value="">— None (Manual SIM) —</option>') +
         _simProviders.map(p => `<option value="${p.provider_id}">${RoutarioUI.escapeHtml(p.display_name)}</option>`).join('');
     provSel.value = '';
 
@@ -295,7 +305,7 @@ function openAddSimCardModal() {
         const compGrp = document.getElementById('simCompanyGroup');
         if (compGrp) compGrp.style.display = '';
         const compSel = document.getElementById('simCompanySelect');
-        compSel.innerHTML = '<option value="">— None / Global —</option>' +
+        compSel.innerHTML = (isFa ? '<option value="">— بدون شرکت / سراسری —</option>' : '<option value="">— None / Global —</option>') +
             _simCompanies.map(c => `<option value="${c.id}">${RoutarioUI.escapeHtml(c.name)}</option>`).join('');
         compSel.value = '';
     }
@@ -306,15 +316,17 @@ function openAddSimCardModal() {
     document.getElementById('simRemoteFetchGroup').style.display = 'none';
     document.getElementById('simTestResult').style.display = 'none';
     document.getElementById('simCardModal').classList.add('active');
+    window.i18n?.translateDOM?.(document.getElementById('simCardModal'));
 }
 
 function openEditSimCardModal(simId) {
     const s = _simCards.find(x => x.id === simId);
     if (!s) return;
     _editingSimCard = s;
+    const isFa = (window.i18n?.currentLang || localStorage.getItem('routario_lang') || 'fa') === 'fa';
 
-    document.getElementById('simCardModalTitle').textContent = 'Edit SIM Card';
-    document.getElementById('simSubmitBtnText').textContent = 'Save Changes';
+    document.getElementById('simCardModalTitle').textContent = isFa ? 'ویرایش سیم‌کارت' : 'Edit SIM Card';
+    document.getElementById('simSubmitBtnText').textContent = isFa ? 'ذخیره تغییرات' : 'Save Changes';
     document.getElementById('simDeleteBtn').style.display = 'inline-flex';
 
     document.getElementById('simAccountLabel').value = s.account_label || '';
@@ -328,7 +340,7 @@ function openEditSimCardModal(simId) {
     setSimInputDate(s.expiry_date);
 
     const provSel = document.getElementById('simProviderSelect');
-    provSel.innerHTML = '<option value="">— None (Manual SIM) —</option>' +
+    provSel.innerHTML = (isFa ? '<option value="">— بدون ارائه‌دهنده (دستی) —</option>' : '<option value="">— None (Manual SIM) —</option>') +
         _simProviders.map(p => `<option value="${p.provider_id}"${p.provider_id === s.provider_id ? ' selected' : ''}>${RoutarioUI.escapeHtml(p.display_name)}</option>`).join('');
     provSel.value = s.provider_id || '';
 
@@ -336,7 +348,7 @@ function openEditSimCardModal(simId) {
         const compGrp = document.getElementById('simCompanyGroup');
         if (compGrp) compGrp.style.display = '';
         const compSel = document.getElementById('simCompanySelect');
-        compSel.innerHTML = '<option value="">— None / Global —</option>' +
+        compSel.innerHTML = (isFa ? '<option value="">— بدون شرکت / سراسری —</option>' : '<option value="">— None / Global —</option>') +
             _simCompanies.map(c => `<option value="${c.id}"${c.id === s.company_id ? ' selected' : ''}>${RoutarioUI.escapeHtml(c.name)}</option>`).join('');
         compSel.value = s.company_id ? String(s.company_id) : '';
     }
@@ -347,6 +359,7 @@ function openEditSimCardModal(simId) {
     document.getElementById('simRemoteFetchGroup').style.display = 'none';
     document.getElementById('simTestResult').style.display = 'none';
     document.getElementById('simCardModal').classList.add('active');
+    window.i18n?.translateDOM?.(document.getElementById('simCardModal'));
 }
 
 function closeSimCardModal() {
@@ -373,7 +386,8 @@ function _populateSimDeviceSelect(selectedDeviceId = null, companyId = null) {
         return true;
     });
 
-    devSel.innerHTML = '<option value="">— Unassigned —</option>' +
+    const isFa = (window.i18n?.currentLang || localStorage.getItem('routario_lang') || 'fa') === 'fa';
+    devSel.innerHTML = (isFa ? '<option value="">— تخصیص نیافته —</option>' : '<option value="">— Unassigned —</option>') +
         filteredDevs.map(d => `<option value="${d.id}"${d.id === selectedDeviceId ? ' selected' : ''}>${RoutarioUI.escapeHtml(d.name)}${d.license_plate ? ' (' + RoutarioUI.escapeHtml(d.license_plate) + ')' : ''}</option>`).join('');
 }
 
@@ -556,6 +570,7 @@ async function fetchRemoteSims() {
 
 async function saveSimCard(event) {
     if (event) event.preventDefault();
+    const isFa = (window.i18n?.currentLang || localStorage.getItem('routario_lang') || 'fa') === 'fa';
 
     const provId = document.getElementById('simProviderSelect')?.value.trim() || null;
     const phoneNumber = document.getElementById('simPhoneNumber')?.value.trim();
@@ -563,7 +578,7 @@ async function saveSimCard(event) {
     const credentials = _getSimCredentialsFromForm();
 
     if (!phoneNumber) {
-        showAlert('Please enter a phone number / MSISDN', 'error');
+        showAlert(isFa ? 'لطفاً شماره تلفن / MSISDN را وارد کنید' : 'Please enter a phone number / MSISDN', 'error');
         return;
     }
     if (!accountLabel) {
@@ -615,10 +630,10 @@ async function saveSimCard(event) {
 
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
-            throw new Error(err.detail || 'Failed to save SIM card');
+            throw new Error(err.detail || (isFa ? 'ذخیره سیم‌کارت ناموفق بود' : 'Failed to save SIM card'));
         }
 
-        showAlert(_editingSimCard ? 'SIM card updated' : 'SIM card created', 'success');
+        showAlert(_editingSimCard ? (isFa ? 'سیم‌کارت به‌روزرسانی شد' : 'SIM card updated') : (isFa ? 'سیم‌کارت ایجاد شد' : 'SIM card created'), 'success');
         closeSimCardModal();
         await _loadSimCards();
     } catch (e) {
@@ -629,14 +644,16 @@ async function saveSimCard(event) {
 }
 
 async function deleteSimCard(simId) {
-    if (!confirm('Are you sure you want to delete this SIM card?')) return;
+    const isFa = (window.i18n?.currentLang || localStorage.getItem('routario_lang') || 'fa') === 'fa';
+    const confirmMsg = isFa ? 'آیا از حذف این سیم‌کارت مطمئن هستید؟' : 'Are you sure you want to delete this SIM card?';
+    if (!confirm(confirmMsg)) return;
     try {
         const res = await apiFetch(`${API_BASE}/sim-cards/${simId}`, { method: 'DELETE' });
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
-            throw new Error(err.detail || 'Failed to delete SIM card');
+            throw new Error(err.detail || (isFa ? 'حذف سیم‌کارت ناموفق بود' : 'Failed to delete SIM card'));
         }
-        showAlert('SIM card deleted', 'success');
+        showAlert(isFa ? 'سیم‌کارت حذف شد' : 'SIM card deleted', 'success');
         if (_editingSimCard && _editingSimCard.id === simId) {
             closeSimCardModal();
         }
@@ -647,6 +664,11 @@ async function deleteSimCard(simId) {
 }
 
 function openSimDatePicker(inputId) {
+    const isFa = (localStorage.getItem('app_lang') === 'fa') || (document.documentElement.lang === 'fa');
+    if (isFa && typeof PersianCalendar !== 'undefined' && typeof PersianCalendar.openPicker === 'function') {
+        PersianCalendar.openPicker(inputId, { hasTime: false });
+        return;
+    }
     const picker = document.getElementById(inputId + 'Picker');
     if (!picker) return;
     const currentIso = getSimInputIso();

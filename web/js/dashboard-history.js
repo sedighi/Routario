@@ -200,7 +200,8 @@ function isDateTimeFormatDefault() {
 }
 
 function initHistoryDateInputs() {
-    const isDef = isDateTimeFormatDefault();
+    const isFa = (localStorage.getItem('app_lang') === 'fa') || (document.documentElement.lang === 'fa');
+    const isDef = isDateTimeFormatDefault() && !isFa;
     ['historyStart', 'historyEnd'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -223,7 +224,8 @@ function setHistoryInputDateTime(inputId, date) {
     if (isNaN(d.getTime())) return;
     const iso = toLocalISO(d);
     el.dataset.iso = iso;
-    const isDef = isDateTimeFormatDefault();
+    const isFa = (localStorage.getItem('app_lang') === 'fa') || (document.documentElement.lang === 'fa');
+    const isDef = isDateTimeFormatDefault() && !isFa;
     const wrap = el.closest('.datetime-picker-wrap');
     if (isDef) {
         if (el.type !== 'datetime-local') el.type = 'datetime-local';
@@ -232,7 +234,11 @@ function setHistoryInputDateTime(inputId, date) {
     } else {
         if (el.type !== 'text') el.type = 'text';
         if (wrap) wrap.classList.remove('is-native');
-        el.value = typeof formatDateTimeValue === 'function' ? formatDateTimeValue(d) : iso;
+        if (isFa && typeof PersianCalendar !== 'undefined' && typeof PersianCalendar.formatJalaliDateTime === 'function') {
+            el.value = PersianCalendar.formatJalaliDateTime(d, { withSeconds: false, usePersianDigits: false });
+        } else {
+            el.value = typeof formatDateTimeValue === 'function' ? formatDateTimeValue(d) : iso;
+        }
         const picker = document.getElementById(inputId + 'Picker');
         if (picker) picker.value = iso;
     }
@@ -257,6 +263,11 @@ function getHistoryInputDate(inputId) {
 }
 
 function openHistoryPicker(inputId) {
+    const isFa = (localStorage.getItem('app_lang') === 'fa') || (document.documentElement.lang === 'fa');
+    if (isFa && typeof PersianCalendar !== 'undefined' && typeof PersianCalendar.openPicker === 'function') {
+        PersianCalendar.openPicker(inputId, { hasTime: true });
+        return;
+    }
     const picker = document.getElementById(inputId + 'Picker');
     if (!picker) return;
     const current = getHistoryInputDate(inputId);

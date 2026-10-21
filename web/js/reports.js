@@ -59,7 +59,8 @@ function isDateFormatDefault() {
 }
 
 function initReportDateInputs() {
-    const isDef = isDateFormatDefault();
+    const isFa = (localStorage.getItem('app_lang') === 'fa') || (document.documentElement.lang === 'fa');
+    const isDef = isDateFormatDefault() && !isFa;
     ['startDate', 'endDate'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -82,7 +83,8 @@ function setReportInputDate(inputId, date) {
     if (!d) return;
     const ymd = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     el.dataset.iso = ymd;
-    const isDef = isDateFormatDefault();
+    const isFa = (localStorage.getItem('app_lang') === 'fa') || (document.documentElement.lang === 'fa');
+    const isDef = isDateFormatDefault() && !isFa;
     const group = el.closest('.form-group');
     if (isDef) {
         if (el.type !== 'date') el.type = 'date';
@@ -91,7 +93,11 @@ function setReportInputDate(inputId, date) {
     } else {
         if (el.type !== 'text') el.type = 'text';
         if (group) group.classList.remove('is-native');
-        el.value = typeof formatDateValue === 'function' ? formatDateValue(d) : ymd;
+        if (isFa && typeof PersianCalendar !== 'undefined' && typeof PersianCalendar.formatJalaliDate === 'function') {
+            el.value = PersianCalendar.formatJalaliDate(d, { usePersianDigits: false });
+        } else {
+            el.value = typeof formatDateValue === 'function' ? formatDateValue(d) : ymd;
+        }
         const picker = document.getElementById(inputId + 'Picker');
         if (picker) picker.value = ymd;
     }
@@ -119,6 +125,11 @@ function getReportInputIso(inputId) {
 }
 
 function openReportDatePicker(inputId) {
+    const isFa = (localStorage.getItem('app_lang') === 'fa') || (document.documentElement.lang === 'fa');
+    if (isFa && typeof PersianCalendar !== 'undefined' && typeof PersianCalendar.openPicker === 'function') {
+        PersianCalendar.openPicker(inputId, { hasTime: false });
+        return;
+    }
     const picker = document.getElementById(inputId + 'Picker');
     if (!picker) return;
     const current = getReportInputDate(inputId) || new Date();
@@ -3542,7 +3553,8 @@ function _renderScheduleList(list = _schedules) {
     const tbody  = document.getElementById('schedBody');
     const noData = document.getElementById('schedNoData');
     const count  = document.getElementById('schedCount');
-    if (count) count.textContent = `${list.length} schedule${list.length !== 1 ? 's' : ''}`;
+    const isFa   = (window.i18n?.getLanguage?.() === 'fa');
+    if (count) count.textContent = isFa ? `${list.length} زمان‌بندی` : `${list.length} schedule${list.length !== 1 ? 's' : ''}`;
 
     // Sort
     const col = _schedSortCol;
@@ -3560,19 +3572,21 @@ function _renderScheduleList(list = _schedules) {
     });
 
     head.innerHTML = `<tr>
-        ${_schedTh('name',      'Name')}
-        ${_schedTh('type',      'Type')}
-        ${_schedTh('frequency', 'Frequency')}
-        ${_schedTh('next_run',  'Next Run')}
-        ${_schedTh('runs',      'Runs')}
-        ${_schedTh('status',    'Status')}
-        <th>Actions</th>
+        ${_schedTh('name',      window.t('Name', 'Name'))}
+        ${_schedTh('type',      window.t('Type', 'Type'))}
+        ${_schedTh('frequency', window.t('Frequency', 'Frequency'))}
+        ${_schedTh('next_run',  window.t('Next Run', 'Next Run'))}
+        ${_schedTh('runs',      window.t('Runs', 'Runs'))}
+        ${_schedTh('status',    window.t('Status', 'Status'))}
+        <th>${window.t('Actions', 'Actions')}</th>
     </tr>`;
 
     if (!sorted.length) {
         tbody.innerHTML = '';
         const q = (document.getElementById('schedSearch')?.value || '').trim();
-        noData.textContent = q ? 'No schedules match your search.' : 'No schedules yet. Use the gear menu to create one.';
+        noData.textContent = q
+            ? window.t('No schedules match your search.', 'No schedules match your search.')
+            : window.t('No schedules yet. Use the gear menu to create one.', 'No schedules yet. Use the gear menu to create one.');
         noData.style.display = '';
         return;
     }
@@ -3664,7 +3678,11 @@ async function _fetchAndShowRuns(schedId) {
 }
 
 async function deleteSchedule(id, name) {
-    if (!confirm(`Delete schedule "${name}"? This will also delete all stored runs.`)) return;
+    const isFa = (window.i18n?.currentLang || localStorage.getItem('routario_lang') || 'fa') === 'fa';
+    const confirmMsg = isFa
+        ? `زمان‌بندی "${name}" حذف شود؟ این عملیات تمام اجراهای ذخیره شده را نیز پاک خواهد کرد.`
+        : `Delete schedule "${name}"? This will also delete all stored runs.`;
+    if (!confirm(confirmMsg)) return;
     try {
         const res = await apiFetch(`${API_BASE}/report-schedules/${id}`, { method: 'DELETE' });
         if (res.ok || res.status === 204) {
@@ -3672,9 +3690,13 @@ async function deleteSchedule(id, name) {
             if (_expandedScheduleId === id) _expandedScheduleId = null;
             filterSchedules();
         } else {
-            showAlert('Failed to delete schedule.', 'error');
+            showAlert(isFa ? 'حذف زمان‌بندی ناموفق بود.' : 'Failed to delete schedule.', 'error');
         }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error(e);
+        const isFa = (window.i18n?.currentLang || localStorage.getItem('routario_lang') || 'fa') === 'fa';
+        showAlert(isFa ? 'خطا در حذف زمان‌بندی.' : 'Error deleting schedule.', 'error');
+    }
 }
 
 async function deleteScheduleFromModal() {
@@ -3869,12 +3891,12 @@ function renderRuntimeLogSummary() {
     if (!el) return;
     _updateRuntimeLogCountsFromRows();
     const items = [
-        ['total', 'Total'],
-        ['debug', 'Debug'],
-        ['info', 'Info'],
-        ['warning', 'Warnings'],
-        ['error', 'Errors'],
-        ['critical', 'Critical'],
+        ['total', window.t('Total', 'Total')],
+        ['debug', window.t('Debug', 'Debug')],
+        ['info', window.t('Info', 'Info')],
+        ['warning', window.t('Warnings', 'Warnings')],
+        ['error', window.t('Errors', 'Errors')],
+        ['critical', window.t('Critical', 'Critical')],
     ];
     el.innerHTML = items.map(([key, label]) => `
         <button type="button"
@@ -4113,7 +4135,10 @@ async function openScheduleModal(scheduleIdOrObj) {
     }
 
     _editingScheduleId = schedule ? schedule.id : null;
-    document.getElementById('schedModalTitle').textContent = schedule ? 'Edit Schedule' : 'New Schedule';
+    const isFa = (window.i18n?.currentLang || localStorage.getItem('routario_lang') || 'fa') === 'fa';
+    document.getElementById('schedModalTitle').textContent = schedule
+        ? (isFa ? 'ویرایش زمان‌بندی' : 'Edit Schedule')
+        : (isFa ? 'زمان‌بندی جدید' : 'New Schedule');
     document.getElementById('sfDeleteBtn').style.display   = schedule ? '' : 'none';
 
     _sfSelectedVehIds.clear();
@@ -4158,6 +4183,7 @@ async function openScheduleModal(scheduleIdOrObj) {
     onSchedFreqChange();
 
     document.getElementById('schedModal').classList.add('active');
+    window.i18n?.translateDOM?.(document.getElementById('schedModal'));
 }
 
 function closeScheduleModal() {
@@ -4206,7 +4232,8 @@ function _renderSfChannels(selected = []) {
     const list = document.getElementById('sfChannelList');
     if (!list) return;
     if (!_notificationChannels.length) {
-        list.innerHTML = '<span style="color:var(--text-muted);font-size:0.85rem;">No notification channels configured.</span>';
+        const isFa = (window.i18n?.currentLang || localStorage.getItem('routario_lang') || 'fa') === 'fa';
+        list.innerHTML = `<span style="color:var(--text-muted);font-size:0.85rem;">${isFa ? 'هیچ کانال اطلاعیه‌ای تنظیم نشده است.' : 'No notification channels configured.'}</span>`;
         return;
     }
     const selectedSet = new Set(selected || []);
@@ -4570,37 +4597,40 @@ function toggleSfAllUser(cb) {
 }
 
 function _updateSfVehLabel() {
+    const isFa = (window.i18n?.currentLang || localStorage.getItem('routario_lang') || 'fa') === 'fa';
     const lbl = document.getElementById('sfVehLabel');
     if (_sfSelectedVehIds.size === 0) {
-        lbl.textContent = 'All vehicles';
+        lbl.textContent = isFa ? 'همه خودروها' : 'All vehicles';
         return;
     }
     if (_sfSelectedVehIds.size === 1) {
         const d = _allDevices.find(d => _sfSelectedVehIds.has(d.id));
-        lbl.textContent = d ? d.name : '1 vehicle';
+        lbl.textContent = d ? d.name : (isFa ? '۱ خودرو' : '1 vehicle');
         return;
     }
-    lbl.textContent = `${_sfSelectedVehIds.size} vehicles`;
+    lbl.textContent = isFa ? `${_sfSelectedVehIds.size} خودرو` : `${_sfSelectedVehIds.size} vehicles`;
 }
 
 function _updateSfUserLabel() {
+    const isFa = (window.i18n?.currentLang || localStorage.getItem('routario_lang') || 'fa') === 'fa';
     const lbl = document.getElementById('sfUserLabel');
-    if (_sfSelectedUserIds.size === 0) { lbl.textContent = 'All users'; return; }
+    if (_sfSelectedUserIds.size === 0) { lbl.textContent = isFa ? 'همه کاربران' : 'All users'; return; }
     if (_sfSelectedUserIds.size === 1) {
         const u = _allUsers.find(u => _sfSelectedUserIds.has(u.id));
-        lbl.textContent = u ? u.username : '1 user';
+        lbl.textContent = u ? u.username : (isFa ? '۱ کاربر' : '1 user');
         return;
     }
-    lbl.textContent = `${_sfSelectedUserIds.size} users`;
+    lbl.textContent = isFa ? `${_sfSelectedUserIds.size} کاربر` : `${_sfSelectedUserIds.size} users`;
 }
 
 async function saveSchedule() {
     _clearScheduleValidation();
+    const isFa = (window.i18n?.currentLang || localStorage.getItem('routario_lang') || 'fa') === 'fa';
 
     const nameInput = document.getElementById('sfName');
     const name = nameInput.value.trim();
     if (!name) {
-        _showScheduleValidation('Schedule Name is required.', nameInput);
+        _showScheduleValidation(isFa ? 'نام زمان‌بندی الزامی است.' : 'Schedule Name is required.', nameInput);
         return;
     }
 
@@ -4613,27 +4643,27 @@ async function saveSchedule() {
     const keep       = parseInt(document.getElementById('sfKeep').value);
 
     if (!rtype) {
-        _showScheduleValidation('Report Type is required.', document.getElementById('sfType'));
+        _showScheduleValidation(isFa ? 'نوع گزارش الزامی است.' : 'Report Type is required.', document.getElementById('sfType'));
         return;
     }
     if (trigger === 'time' && !runTime) {
-        _showScheduleValidation('Run Time is required.', document.getElementById('sfTime'));
+        _showScheduleValidation(isFa ? 'زمان اجرا الزامی است.' : 'Run Time is required.', document.getElementById('sfTime'));
         return;
     }
     if (!_scheduleTriggerMap[trigger]) {
-        _showScheduleValidation('Trigger is required.', document.getElementById('sfTriggerType'));
+        _showScheduleValidation(isFa ? 'محرک الزامی است.' : 'Trigger is required.', document.getElementById('sfTriggerType'));
         return;
     }
     if (!_validateScheduleTriggerRequiredFields()) return;
     if (isNaN(keep) || keep < 1 || keep > 100) {
-        _showScheduleValidation('Keep Last N Runs must be between 1 and 100.', document.getElementById('sfKeep'));
+        _showScheduleValidation(isFa ? 'تعداد ذخیره آخرین اجراها باید بین ۱ تا ۱۰۰ باشد.' : 'Keep Last N Runs must be between 1 and 100.', document.getElementById('sfKeep'));
         return;
     }
 
     const def = _reportDefMap[rtype] || {};
     const needsRange = def.needs_date_range !== false || historical;
     if (needsRange && !dateRange) {
-        _showScheduleValidation('Date Range is required.', document.getElementById('sfDateRange'));
+        _showScheduleValidation(isFa ? 'بازه زمانی الزامی است.' : 'Date Range is required.', document.getElementById('sfDateRange'));
         return;
     }
 
@@ -4671,13 +4701,16 @@ async function saveSchedule() {
         });
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
-            showAlert(err.detail || 'Failed to save schedule.', 'error');
+            showAlert(err.detail || (isFa ? 'ذخیره زمان‌بندی ناموفق بود.' : 'Failed to save schedule.'), 'error');
             return;
         }
         closeScheduleModal();
         await _loadSchedules();
         if (_activeTab !== 'schedules') switchTab('schedules');
-    } catch (e) { console.error(e); showAlert('Error saving schedule.', 'error'); }
+    } catch (e) {
+        console.error(e);
+        showAlert(isFa ? 'خطا در ذخیره زمان‌بندی.' : 'Error saving schedule.', 'error');
+    }
 }
 
 // Close dropdowns in the schedule modal when clicking outside

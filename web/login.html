@@ -17,6 +17,8 @@
     </script>
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="css/rtl.css">
+    <script src="js/i18n.js"></script>
     <style>
         :root {
             color-scheme: dark;
@@ -207,11 +209,17 @@
 </head>
 <body>
     <div class="login-card">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:0.75rem;">
+            <button type="button" class="lang-switch-btn" onclick="toggleLanguage()" title="تغییر زبان / Switch Language">
+                <span class="lang-flag">🇮🇷</span>
+                <span class="lang-text">فارسی</span>
+            </button>
+        </div>
         <div class="logo">
             <img src="/icons/icon-192-full.png" class="logo-icon">
         </div>
-        <h1 id="loginCardTitle">Welcome Back</h1>
-        <p id="loginCardSubtitle">Sign in to your GPS Fleet Tracker</p>
+        <h1 id="loginCardTitle" data-i18n="welcome_back">Welcome Back</h1>
+        <p id="loginCardSubtitle" data-i18n="login_subtitle">Sign in to your GPS Fleet Tracker</p>
 
         <!-- Verifying Token State -->
         <div id="magicVerifyingState" style="display:none;padding:1.5rem 0;">
@@ -223,11 +231,11 @@
         <!-- Standard Password Form -->
         <form id="passwordLoginForm" onsubmit="handleLogin(event)" autocapitalize="off" autocorrect="off" spellcheck="false">
             <div class="form-group">
-                <label class="form-label">Username or Email</label>
+                <label class="form-label" data-i18n="username">Username or Email</label>
                 <input type="text" id="username" class="form-input" required autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next">
             </div>
             <div class="form-group">
-                <label class="form-label">Password</label>
+                <label class="form-label" data-i18n="password">Password</label>
                 <div class="password-input-wrap">
                     <input type="password" id="password" class="form-input" required autocomplete="current-password">
                     <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility" title="Show password">
@@ -239,7 +247,7 @@
                 <label class="form-label">Authenticator or Recovery Code</label>
                 <input type="text" id="mfaCode" class="form-input" inputmode="numeric" autocomplete="one-time-code">
             </div>
-            <button type="submit" class="btn" id="loginBtn">Sign In</button>
+            <button type="submit" class="btn" id="loginBtn" data-i18n="sign_in">Sign In</button>
             <button type="button" class="btn btn-secondary btn-magic" id="magicLinkBtn" onclick="switchToMagicLink()"><i class="mdi mdi-email-fast-outline"></i> Sign in with Email Link</button>
             <button type="button" class="btn btn-secondary" id="passkeyBtn" onclick="handlePasskeyLogin()"><i class="mdi mdi-key-variant"></i> Sign in with passkey</button>
             <button type="button" class="btn btn-secondary btn-sso" id="ssoBtn" onclick="handleSsoLogin()">Sign in with SSO</button>
@@ -463,6 +471,7 @@
             localStorage.setItem('sidebar_compact', data.sidebar_compact === true ? 'true' : 'false');
             localStorage.setItem('time_format', data.time_format || 'auto');
             localStorage.setItem('date_format', data.date_format || 'auto');
+            if (data.language) localStorage.setItem('app_lang', data.language);
             localStorage.setItem('permissions', JSON.stringify(data.permissions || []));
             sessionStorage.setItem('routario_biometric_unlocked', 'true');
             localStorage.setItem('routario_biometric_last_active', String(Date.now()));

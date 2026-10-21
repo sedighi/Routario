@@ -976,6 +976,20 @@ function formatDateValue(val, format = null) {
     const d = _parseDate(val);
     if (!d) return val ? String(val) : 'N/A';
 
+    const isFa = (localStorage.getItem('app_lang') === 'fa') || (document.documentElement.lang === 'fa');
+    if (isFa) {
+        if (typeof PersianCalendar !== 'undefined' && typeof PersianCalendar.formatJalaliDate === 'function') {
+            return PersianCalendar.formatJalaliDate(d, { usePersianDigits: false });
+        }
+        try {
+            return new Intl.DateTimeFormat('fa-IR-u-ca-persian-nu-latn', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+            }).format(d);
+        } catch (_) {}
+    }
+
     const fmt = format || localStorage.getItem('date_format') || 'auto';
     const tz = localStorage.getItem('timezone');
 
@@ -1069,23 +1083,39 @@ function formatDateToLocalSplit(str, { withSeconds = true } = {}) {
 
 function parseUserDateTime(str) {
     if (!str) return null;
-    str = String(str).trim();
-    if (!str) return null;
+    let s = String(str).trim();
+    if (!s) return null;
+
+    // Convert Persian digits if any
+    if (typeof PersianCalendar !== 'undefined' && typeof PersianCalendar.toLatinDigits === 'function') {
+        s = PersianCalendar.toLatinDigits(s);
+    }
 
     const fmt = localStorage.getItem('date_format') || 'auto';
 
-    const ymdMatch = /^(\d{4})[-\/\.](\d{1,2})[-\/\.](\d{1,2})(?:[T\s](\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s*(am|pm))?)?$/i.exec(str);
+    const ymdMatch = /^(\d{4})[-\/\.](\d{1,2})[-\/\.](\d{1,2})(?:[T\s](\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s*(am|pm))?)?$/i.exec(s);
     if (ymdMatch) {
         let [, year, month, day, hr, min, sec, ampm] = ymdMatch;
+        let y = parseInt(year, 10);
+        let m = parseInt(month, 10);
+        let d = parseInt(day, 10);
         let h = hr ? parseInt(hr, 10) : 0;
-        const m = min ? parseInt(min, 10) : 0;
-        const s = sec ? parseInt(sec, 10) : 0;
+        const minVal = min ? parseInt(min, 10) : 0;
+        const sVal = sec ? parseInt(sec, 10) : 0;
         if (ampm) {
             ampm = ampm.toLowerCase();
             if (ampm === 'pm' && h < 12) h += 12;
             if (ampm === 'am' && h === 12) h = 0;
         }
-        return new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10), h, m, s);
+
+        // If Shamsi year
+        if (y >= 1300 && y <= 1500) {
+            if (typeof PersianCalendar !== 'undefined' && typeof PersianCalendar.jalaliToGregorian === 'function') {
+                const [gy, gm, gd] = PersianCalendar.jalaliToGregorian(y, m, d);
+                return new Date(gy, gm - 1, gd, h, minVal, sVal);
+            }
+        }
+        return new Date(y, m - 1, d, h, minVal, sVal);
     }
 
     const dmyMatch = /^(\d{1,2})[-\/\.](\d{1,2})[-\/\.](\d{4})(?:[T\s](\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s*(am|pm))?)?$/i.exec(str);

@@ -4,7 +4,7 @@
  * Place this file at: /web/sw.js  (root of your web directory)
  */
 
-const CACHE_NAME = 'gps-dashboard-v149';
+const CACHE_NAME = 'gps-dashboard-v153';
 const TILE_CACHE_NAME = 'routario-map-tiles-v1';
 const MAX_CACHED_TILES = 1500;
 let tileInsertCount = 0;
@@ -22,6 +22,10 @@ const STATIC_ASSETS = [
   '/css/dashboard.css',
   '/css/device-management.css',
   '/css/user-settings.css',
+  '/css/vazirmatn.css',
+  '/css/rtl.css',
+  '/fonts/Vazirmatn[wght].woff2',
+  '/js/i18n.js',
   '/js/config.js',
   '/js/ui-utils.js',
   '/js/dashboard-state.js',

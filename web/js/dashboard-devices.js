@@ -226,7 +226,8 @@ function renderDeviceList() {
     list.innerHTML = '';
 
     if (devices.length === 0) {
-        list.innerHTML = '<div style="padding: 1rem; color: var(--text-muted); text-align: center;">No devices assigned to this user.</div>';
+        const emptyMsg = (typeof window.t === 'function') ? window.t('no_devices_assigned', 'No devices assigned to this user.') : 'No devices assigned to this user.';
+        list.innerHTML = `<div style="padding: 1rem; color: var(--text-muted); text-align: center;">${emptyMsg}</div>`;
         return;
     }
 

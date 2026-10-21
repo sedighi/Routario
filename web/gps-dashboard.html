@@ -36,8 +36,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/dashboard.css?v=152">
     <link rel="stylesheet" href="css/app-lock.css">
+    <link rel="stylesheet" href="css/rtl.css?v=152">
+    <script src="js/persian-calendar.js"></script>
+    <script src="js/i18n.js?v=152"></script>
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -54,8 +57,13 @@
                     <span class="logo-text">Routario</span>
                 </div>
             </div>
-            <div class="header-menu-wrap">
-            <button class="header-gear-btn" onclick="toggleHeaderMenu(event)" title="Settings" id="headerGearBtn">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+                <button type="button" class="lang-switch-btn" id="dashLangSwitchBtn" onclick="toggleLanguage()" title="تغییر زبان / Switch Language">
+                    <span class="lang-flag">🇮🇷</span>
+                    <span class="lang-text">فارسی</span>
+                </button>
+                <div class="header-menu-wrap">
+                    <button class="header-gear-btn" onclick="toggleHeaderMenu(event)" title="Settings" id="headerGearBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="3"/>
@@ -187,6 +195,7 @@
                     <span>Sign Out</span>
                 </button>
             </div>
+        </div>
         </div>
         </header>
         
@@ -409,22 +418,22 @@
             <div class="modal-header">
                 <h2 class="modal-title">
                     <i class="mdi mdi-map-marker-path" style="color:var(--accent-primary);margin-right:0.4rem;"></i>
-                    Routes
+                    <span data-i18n="Routes">Routes</span>
                 </h2>
                 <button class="modal-close" onclick="closeDashboardRoutesModal()"><i class="mdi mdi-close"></i></button>
             </div>
             <div class="dashboard-routes-toolbar">
                 <div class="search-input-wrap">
                     <span class="search-icon"><i class="mdi mdi-magnify"></i></span>
-                    <input type="text" id="dashboardRoutesSearch" class="search-input" placeholder="Search by route, status, vehicle, or stops..." oninput="renderDashboardRoutesModal()">
+                    <input type="text" id="dashboardRoutesSearch" class="search-input" placeholder="Search by route, status, vehicle, or stops..." data-i18n-placeholder="Search by route, status, vehicle, or stops..." oninput="renderDashboardRoutesModal()">
                 </div>
                 <button type="button" class="btn btn-primary" id="dashboardRouteNewBtn" onclick="openDashboardRouteEditor()">
-                    <i class="mdi mdi-plus"></i> New Route
+                    <i class="mdi mdi-plus"></i> <span data-i18n="New Route">New Route</span>
                 </button>
                 <span class="dashboard-routes-count" id="dashboardRoutesCount"></span>
             </div>
             <div class="dashboard-routes-list" id="dashboardRoutesList">
-                <div class="dashboard-routes-empty">Loading routes...</div>
+                <div class="dashboard-routes-empty" data-i18n="Loading routes...">Loading routes...</div>
             </div>
         </div>
     </div>
@@ -432,37 +441,37 @@
     <div class="modal" id="dashboardRouteEditorModal">
         <div class="modal-content dashboard-route-editor-modal">
             <div class="modal-header">
-                <h2 class="modal-title" id="dashboardRouteEditorTitle">New Route</h2>
+                <h2 class="modal-title" id="dashboardRouteEditorTitle" data-i18n="New Route">New Route</h2>
                 <button class="modal-close" onclick="closeDashboardRouteEditor()"><i class="mdi mdi-close"></i></button>
             </div>
             <div class="dashboard-route-editor-body">
                 <div class="dashboard-route-editor-grid">
                     <div class="form-group">
-                        <label class="form-label">Route Name <span style="color:var(--accent-danger)">*</span></label>
-                        <input type="text" id="dashboardRouteName" class="form-input" placeholder="Morning deliveries">
+                        <label class="form-label"><span data-i18n="Route Name">Route Name</span> <span style="color:var(--accent-danger)">*</span></label>
+                        <input type="text" id="dashboardRouteName" class="form-input" placeholder="Morning deliveries" data-i18n-placeholder="Morning deliveries">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Vehicle</label>
+                        <label class="form-label" data-i18n="Vehicle">Vehicle</label>
                         <select id="dashboardRouteDevice" class="form-input"></select>
                     </div>
                 </div>
                 <div class="dashboard-route-editor-map-wrap">
                     <div id="dashboardRouteEditorMap"></div>
-                    <div class="dashboard-route-map-hint" id="dashboardRouteMapHint">Click the map to add a stop. Drag markers to adjust points.</div>
+                    <div class="dashboard-route-map-hint" id="dashboardRouteMapHint" data-i18n="Click the map to add a stop. Drag markers to adjust points.">Click the map to add a stop. Drag markers to adjust points.</div>
                 </div>
                 <div class="dashboard-route-stops-head">
-                    <h3>Stops</h3>
+                    <h3 data-i18n="Stops">Stops</h3>
                 </div>
                 <div class="dashboard-route-stops" id="dashboardRouteStops"></div>
-                <div class="dashboard-routes-empty" id="dashboardRouteEditorHint">Add at least two stops with valid coordinates.</div>
+                <div class="dashboard-routes-empty" id="dashboardRouteEditorHint" data-i18n="Add at least two stops with valid coordinates.">Add at least two stops with valid coordinates.</div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="dashboardRouteDeleteBtn" onclick="deleteDashboardRouteFromEditor()" style="display:none;"><i class="mdi mdi-delete"></i> Delete</button>
+                <button type="button" class="btn btn-danger" id="dashboardRouteDeleteBtn" onclick="deleteDashboardRouteFromEditor()" style="display:none;"><i class="mdi mdi-delete"></i> <span data-i18n="Delete">Delete</span></button>
                 <div class="dashboard-route-editor-footer-actions">
-                    <button type="button" class="btn btn-secondary" id="dashboardRouteDetailsBtn" onclick="openDashboardRouteEditorDetails()" style="display:none;"><i class="mdi mdi-clipboard-text-clock-outline"></i> Details</button>
-                    <button type="button" class="btn btn-secondary" id="dashboardRouteShowMapBtn" onclick="showDashboardRouteEditorRouteOnMap()" style="display:none;"><i class="mdi mdi-map-search-outline"></i> Show on Map</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeDashboardRouteEditor()">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="dashboardRouteSaveBtn" onclick="saveDashboardRouteEditor()"><i class="mdi mdi-content-save"></i> Save Route</button>
+                    <button type="button" class="btn btn-secondary" id="dashboardRouteDetailsBtn" onclick="openDashboardRouteEditorDetails()" style="display:none;"><i class="mdi mdi-clipboard-text-clock-outline"></i> <span data-i18n="Details">Details</span></button>
+                    <button type="button" class="btn btn-secondary" id="dashboardRouteShowMapBtn" onclick="showDashboardRouteEditorRouteOnMap()" style="display:none;"><i class="mdi mdi-map-search-outline"></i> <span data-i18n="Show on Map">Show on Map</span></button>
+                    <button type="button" class="btn btn-secondary" onclick="closeDashboardRouteEditor()" data-i18n="Cancel">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="dashboardRouteSaveBtn" onclick="saveDashboardRouteEditor()"><i class="mdi mdi-content-save"></i> <span data-i18n="Save Route">Save Route</span></button>
                 </div>
             </div>
         </div>
@@ -471,12 +480,12 @@
     <div class="modal" id="dashboardRouteDetailsModal">
         <div class="modal-content dashboard-route-details-modal">
             <div class="modal-header">
-                <h2 class="modal-title" id="dashboardRouteDetailsTitle">Route Details</h2>
+                <h2 class="modal-title" id="dashboardRouteDetailsTitle" data-i18n="Route Details">Route Details</h2>
                 <button class="modal-close" onclick="closeDashboardRouteDetails()"><i class="mdi mdi-close"></i></button>
             </div>
             <div class="dashboard-route-details-body" id="dashboardRouteDetailsBody"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeDashboardRouteDetails()" style="margin-left:auto;">Close</button>
+                <button type="button" class="btn btn-secondary" onclick="closeDashboardRouteDetails()" style="margin-left:auto;" data-i18n="Close">Close</button>
             </div>
         </div>
     </div>
@@ -485,21 +494,21 @@
     <div class="modal" id="alertsModal">
         <div class="modal-content">
             <div class="modal-header alerts-modal-header">
-                <h2 class="modal-title">Recent Alerts</h2>
+                <h2 class="modal-title" data-i18n="Recent Alerts">Recent Alerts</h2>
                 <div class="alerts-modal-actions">
-                    <button class="btn btn-secondary" id="alertHistoryToggleBtn" onclick="toggleAlertHistory()"><i class="mdi mdi-history"></i> History</button>
-                    <button class="btn btn-secondary" id="alertClearAllBtn" onclick="clearAllAlerts()"><i class="mdi mdi-broom"></i> Clear All</button>
+                    <button class="btn btn-secondary" id="alertHistoryToggleBtn" onclick="toggleAlertHistory()"><i class="mdi mdi-history"></i> <span data-i18n="History">History</span></button>
+                    <button class="btn btn-secondary" id="alertClearAllBtn" onclick="clearAllAlerts()"><i class="mdi mdi-broom"></i> <span data-i18n="Clear All">Clear All</span></button>
                 </div>
                 <button class="modal-close" onclick="closeAlertsModal()"><i class="mdi mdi-close"></i></button>
             </div>
             <div class="alerts-list" id="alertsList"></div>
             <div id="alertsHistorySection" style="display:none; border-top: 1px solid var(--border-color); margin-top: 0.75rem; padding-top: 0.75rem;">
-                <div style="font-size: 0.8rem; color: var(--text-muted); padding: 0 0 0.5rem 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                <div style="font-size: 0.8rem; color: var(--text-muted); padding: 0 0 0.5rem 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" data-i18n="Cleared Alerts">
                     Cleared Alerts
                 </div>
                 <div class="alerts-list" id="alertsHistoryList"></div>
                 <div id="alertsHistoryLoadMore" style="display:none; text-align:center; padding-top: 0.75rem;">
-                    <button class="btn btn-secondary" onclick="loadMoreAlertHistory()" style="font-size: 0.82rem;">Load More</button>
+                    <button class="btn btn-secondary" onclick="loadMoreAlertHistory()" style="font-size: 0.82rem;" data-i18n="Load More">Load More</button>
                 </div>
             </div>
         </div>
@@ -509,7 +518,7 @@
     <div class="modal" id="geofenceModal">
         <div class="modal-content" style="max-width: 480px;">
             <div class="modal-header">
-                <h2 class="modal-title" id="geofenceModalTitle">Save Geofence</h2>
+                <h2 class="modal-title" id="geofenceModalTitle" data-i18n="Save Geofence">Save Geofence</h2>
                 <button class="modal-close" onclick="closeGeofenceModal()"><i class="mdi mdi-close"></i></button>
             </div>
 
@@ -520,41 +529,41 @@
             <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
 
                 <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label">Name *</label>
+                    <label class="form-label" data-i18n="Name *">Name *</label>
                     <input type="text" id="geofenceModalName" class="form-input"
-                           placeholder="e.g. Office Zone, Delivery Area"
+                           placeholder="e.g. Office Zone, Delivery Area" data-i18n-placeholder="e.g. Office Zone, Delivery Area"
                            onkeydown="if(event.key==='Enter') submitGeofenceModal()">
                 </div>
 
                 <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label">Description</label>
+                    <label class="form-label" data-i18n="Description">Description</label>
                     <input type="text" id="geofenceModalDescription" class="form-input"
-                           placeholder="Optional notes">
+                           placeholder="Optional notes" data-i18n-placeholder="Optional notes">
                 </div>
 
                 <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label">Color</label>
+                    <label class="form-label" data-i18n="Color">Color</label>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         <input type="color" id="geofenceModalColor" value="#3b82f6"
-                               style="width: 44px; height: 44px; border: 1px solid var(--border-color);
-                                      border-radius: 8px; cursor: pointer; background: none; padding: 2px;">
-                        <span style="font-size: 0.85rem; color: var(--text-muted);">
+                                style="width: 44px; height: 44px; border: 1px solid var(--border-color);
+                                       border-radius: 8px; cursor: pointer; background: none; padding: 2px;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="Choose the zone outline and fill colour">
                             Choose the zone outline and fill colour
                         </span>
                     </div>
                 </div>
 
                 <div class="form-group" id="geofenceOwnerGroup" style="margin-bottom: 0; display: none;">
-                    <label class="form-label">Owner</label>
+                    <label class="form-label" data-i18n="Owner">Owner</label>
                     <select id="geofenceModalOwner" class="form-input"></select>
                 </div>
 
                 <div class="form-group" id="geofenceBufferGroup" style="margin-bottom: 0; display: none;">
-                    <label class="form-label">Corridor width (metres)</label>
+                    <label class="form-label" data-i18n="Corridor width (metres)">Corridor width (metres)</label>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         <input type="number" id="geofenceModalBuffer" class="form-input"
                                value="50" min="1" max="10000" style="max-width: 120px; box-sizing: border-box;">
-                        <span style="font-size: 0.85rem; color: var(--text-muted);">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="Alert triggers within this distance of the line">
                             Alert triggers within this distance of the line
                         </span>
                     </div>
@@ -565,14 +574,14 @@
                     <button onclick="closeGeofenceModal()"
                         style="background: transparent; border: 1px solid var(--border-color);
                                color: var(--text-muted); padding: 0.6rem 1.2rem; border-radius: 8px;
-                               cursor: pointer; font-size: 0.9rem;">
+                               cursor: pointer; font-size: 0.9rem;" data-i18n="Cancel">
                         Cancel
                     </button>
                     <button onclick="submitGeofenceModal()"
                         style="background: var(--accent-primary); border: none; color: #fff;
                                padding: 0.6rem 1.4rem; border-radius: 8px; cursor: pointer;
                                font-size: 0.9rem; font-weight: 600;">
-                        <i class="mdi mdi-content-save"></i> Save
+                        <i class="mdi mdi-content-save"></i> <span data-i18n="Save">Save</span>
                     </button>
                 </div>
             </div>
@@ -1033,7 +1042,11 @@
             const menuRole = document.getElementById('menuRole');
             const companiesMenuItem = document.getElementById('companiesMenuItem');
             if (menuUsername) menuUsername.textContent = username;
-            if (menuRole) menuRole.textContent = isAdmin ? 'Super Admin' : isCompanyAdmin ? 'Company Admin' : 'User';
+            if (menuRole) {
+                const roleKey = isAdmin ? 'super_admin' : isCompanyAdmin ? 'company_admin' : 'user_role';
+                const defaultRole = isAdmin ? 'Super Admin' : isCompanyAdmin ? 'Company Admin' : 'User';
+                menuRole.textContent = (typeof window.t === 'function') ? window.t(roleKey, defaultRole) : defaultRole;
+            }
             if (companiesMenuItem) companiesMenuItem.style.display = isAdmin ? '' : 'none';
         }
         function closeHeaderMenu() {

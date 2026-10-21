@@ -15,15 +15,16 @@
     const isDevices   = path.includes('device-management') || (isManagement && !isCompanies && !isDrivers && !isUsers);
     const isSettings  = path.includes('user-settings');
 
-    const pageTitle = isManagement ? 'Management'
-                    : isReports ? 'Fleet Reports'
-                    : isSettings ? 'User Settings'
-                    : 'Management';
+    const isFa = (localStorage.getItem('app_lang') === 'fa');
+    const pageTitle = isManagement ? (isFa ? 'مدیریت سامانه' : 'Management')
+                    : isReports ? (isFa ? 'گزارش‌های ناوگان' : 'Fleet Reports')
+                    : isSettings ? (isFa ? 'تنظیمات کاربر' : 'User Settings')
+                    : (isFa ? 'مدیریت' : 'Management');
 
     const isAdmin        = localStorage.getItem('is_admin') === 'true';
     const isCompanyAdmin = localStorage.getItem('is_company_admin') === 'true';
-    const username       = localStorage.getItem('username') || 'User';
-    const roleLabel      = isAdmin ? 'Super Admin' : isCompanyAdmin ? 'Company Admin' : 'User';
+    const username       = localStorage.getItem('username') || (isFa ? 'کاربر' : 'User');
+    const roleLabel      = isAdmin ? (isFa ? 'مدیر کل' : 'Super Admin') : isCompanyAdmin ? (isFa ? 'مدیر شرکت' : 'Company Admin') : (isFa ? 'کاربر' : 'User');
 
     // ── Styles (mirrors dashboard.css header-menu classes) ────────────────────
     const style = document.createElement('style');
@@ -330,6 +331,19 @@
         }
     `;
     document.head.appendChild(style);
+
+    // Ensure RTL & i18n resources are loaded
+    if (!document.querySelector('link[href*="rtl.css"]')) {
+        const rtlLink = document.createElement('link');
+        rtlLink.rel = 'stylesheet';
+        rtlLink.href = 'css/rtl.css';
+        document.head.appendChild(rtlLink);
+    }
+    if (!window.i18n && !document.querySelector('script[src*="i18n.js"]')) {
+        const i18nScript = document.createElement('script');
+        i18nScript.src = 'js/i18n.js';
+        document.head.appendChild(i18nScript);
+    }
 
     // ── Chevron SVG helper ────────────────────────────────────────────────────
     const chevron = `<svg class="header-menu-chevron" xmlns="http://www.w3.org/2000/svg" width="13" height="13"

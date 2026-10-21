@@ -442,10 +442,12 @@ function filterDevices() {
 function renderDeviceTable(list) {
     const tbody = document.getElementById('devicesTableBody');
     const count = document.getElementById('devicesCount');
-    count.textContent = `${list.length} device${list.length !== 1 ? 's' : ''}`;
+    const isFa = (window.i18n?.getLanguage?.() === 'fa');
+    if (count) count.textContent = isFa ? `${list.length} دستگاه` : `${list.length} device${list.length !== 1 ? 's' : ''}`;
 
     if (!list.length) {
-        tbody.innerHTML = RoutarioTables.stateRow('<div style="font-size:2.5rem;margin-bottom:0.75rem;"><i class="mdi mdi-antenna"></i></div>No devices found', 7, { padding: '3rem' });
+        const noDevMsg = isFa ? 'هیچ دستگاهی یافت نشد' : (window.t ? window.t('no_devices_found', 'No devices found') : 'No devices found');
+        tbody.innerHTML = RoutarioTables.stateRow(`<div style="font-size:2.5rem;margin-bottom:0.75rem;"><i class="mdi mdi-antenna"></i></div>${noDevMsg}`, 7, { padding: '3rem' });
         return;
     }
 

@@ -259,6 +259,7 @@ class Token(BaseModel):
     mfa_required: bool = False
     is_company_admin: bool = False
     company_id: Optional[int] = None
+    language: Optional[str] = "fa"
     units: str = "metric"
     currency: str = "EUR"
     theme: str = "dark"

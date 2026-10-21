@@ -260,6 +260,10 @@ function renderProfile() {
     if (breadcrumbEl) {
         breadcrumbEl.value = localStorage.getItem('map_breadcrumb_points') || '10';
     }
+    const langEl = document.getElementById('profileLanguage');
+    if (langEl) {
+        langEl.value = profileUser?.language || localStorage.getItem('app_lang') || 'fa';
+    }
     renderProfileCurrencyOptions(profileUser.currency || 'EUR');
     const supported = Boolean(window.PublicKeyCredential);
     const note = document.getElementById('passkeySupportNote');
@@ -313,9 +317,12 @@ async function saveProfile() {
     const timeFormat = timeFmtEl ? timeFmtEl.value : (profileUser?.time_format || 'auto');
     const dateFormat = dateFmtEl ? dateFmtEl.value : (profileUser?.date_format || 'auto');
     const phoneEl = document.getElementById('profilePhone');
+    const langEl = document.getElementById('profileLanguage');
+    const chosenLang = langEl ? langEl.value : (profileUser?.language || localStorage.getItem('app_lang') || 'fa');
     const payload = {
         email: document.getElementById('profileEmail').value.trim(),
         phone_number: phoneEl ? (phoneEl.value.trim() || null) : null,
+        language: chosenLang,
         units: document.getElementById('profileUnits').value,
         currency: document.getElementById('profileCurrency').value,
         theme: themeEl ? themeEl.value : (profileUser?.theme || 'dark'),
@@ -327,14 +334,25 @@ async function saveProfile() {
     if (password) payload.password = password;
 
     const btn = document.getElementById('profileSaveBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving';
+    const btn2 = document.getElementById('profileSaveBtn2');
+    const savingText = (window.t ? window.t('saving', 'Saving…') : 'Saving…');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="mdi mdi-loading mdi-spin"></i> ${savingText}`;
+    }
+    if (btn2) {
+        btn2.disabled = true;
+        btn2.innerHTML = `<i class="mdi mdi-loading mdi-spin"></i> ${savingText}`;
+    }
     try {
         const saved = await settingsJson(`${API_BASE}/users/${USER_ID}`, {
             method: 'PUT',
             body: JSON.stringify(payload),
         });
         profileUser = saved;
+        if (saved.language) {
+            localStorage.setItem('app_lang', saved.language);
+        }
         localStorage.setItem('units', saved.units || payload.units);
         localStorage.setItem('currency', saved.currency || payload.currency);
         localStorage.setItem('theme', saved.theme || payload.theme);
@@ -344,6 +362,9 @@ async function saveProfile() {
         const breadcrumbEl = document.getElementById('profileBreadcrumbs');
         const breadcrumbPoints = breadcrumbEl ? breadcrumbEl.value : '10';
         localStorage.setItem('map_breadcrumb_points', breadcrumbPoints);
+        if (langEl && typeof setLanguage === 'function') {
+            setLanguage(langEl.value);
+        }
         if (typeof applyTheme === 'function') {
             applyTheme(saved.theme || payload.theme);
         }
@@ -354,12 +375,18 @@ async function saveProfile() {
         window.dispatchEvent(new Event('routario:datetimeformatchange'));
         window.dispatchEvent(new CustomEvent('routario:breadcrumbchange', { detail: { points: breadcrumbPoints } }));
         renderProfile();
-        showAlert('Profile saved', 'success');
+        showAlert(window.t ? window.t('profile_saved', 'Profile saved') : 'Profile saved', 'success');
     } catch (e) {
-        showAlert(e.message || 'Profile save failed', 'error');
+        showAlert(e.message || (window.t ? window.t('profile_save_failed', 'Profile save failed') : 'Profile save failed'), 'error');
     } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="mdi mdi-content-save"></i> Save Profile';
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="mdi mdi-content-save"></i> ${window.t ? window.t('save_account', 'Save Account') : 'Save Account'}`;
+        }
+        if (btn2) {
+            btn2.disabled = false;
+            btn2.innerHTML = `<i class="mdi mdi-content-save"></i> ${window.t ? window.t('save_preferences', 'Save Preferences') : 'Save Preferences'}`;
+        }
     }
 }
 

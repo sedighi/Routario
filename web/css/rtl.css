@@ -1,0 +1,681 @@
+/* Routario - Right-to-Left (RTL) & Persian Font Styling */
+@import url('vazirmatn.css');
+
+html[lang="fa"],
+html[dir="rtl"],
+body.rtl,
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+    --font-display: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--font-display);
+}
+
+[dir="rtl"] body {
+    font-family: var(--font-display);
+}
+
+[dir="rtl"] input,
+[dir="rtl"] select,
+[dir="rtl"] textarea,
+[dir="rtl"] button,
+[dir="rtl"] optgroup,
+[dir="rtl"] option {
+    font-family: var(--font-display);
+}
+
+/* Numbers & Monospace elements stay readable */
+[dir="rtl"] .mono,
+[dir="rtl"] code,
+[dir="rtl"] pre,
+[dir="rtl"] .font-mono,
+[dir="rtl"] .latlng,
+[dir="rtl"] .device-imei,
+[dir="rtl"] .input-numeric {
+    direction: ltr;
+    display: inline-block;
+    font-family: var(--font-mono, monospace);
+}
+
+/* ==================== Header & Navigation ==================== */
+[dir="rtl"] .header {
+    flex-direction: row;
+}
+
+[dir="rtl"] .header-menu-dropdown,
+[dir="rtl"] #headerMenuDropdown,
+[dir="rtl"] #snDropdown {
+    right: auto !important;
+    left: 0 !important;
+    transform-origin: top left !important;
+}
+
+/* Menu item chevron arrows pointing to the left (<) in RTL as user confirmed */
+[dir="rtl"] .header-menu-chevron {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+    transform: rotate(180deg) translateX(-4px) !important;
+}
+
+[dir="rtl"] .header-menu-badge {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+}
+
+[dir="rtl"] .header-menu-item:hover .header-menu-chevron {
+    opacity: 1 !important;
+    transform: rotate(180deg) translateX(0) !important;
+}
+
+[dir="rtl"] .header-menu-item {
+    text-align: right;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+}
+
+[dir="rtl"] .header-menu-dropdown {
+    min-width: 230px;
+}
+
+[dir="rtl"] .settings-nav-home svg,
+[dir="rtl"] .settings-nav-home i {
+    transform: scaleX(-1);
+}
+
+[dir="rtl"] .settings-nav-inner {
+    flex-direction: row;
+}
+
+/* ==================== Map Controls in RTL ==================== */
+/* Move map controls (layers, zoom, geofences, alerts) to the left in RTL mode */
+[dir="rtl"] .map-ctrl-group {
+    right: auto !important;
+    left: 1rem !important;
+}
+
+[dir="rtl"] .map-ctrl-flyout {
+    right: auto !important;
+    left: calc(100% + 8px) !important;
+    box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.5) !important;
+}
+
+[dir="rtl"] .leaflet-top.leaflet-right {
+    right: auto !important;
+    left: 0 !important;
+}
+
+/* ==================== Sidebar (Opening & Closing in RTL) ==================== */
+/* In RTL, sidebar is docked to the right edge.
+   When hidden, it translates 100% off-screen to the right. */
+[dir="rtl"] .sidebar {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    justify-self: end !important;
+    margin-right: 0 !important;
+    margin-left: auto !important;
+    border-left: 1px solid var(--border-color) !important;
+    border-right: none !important;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.45) !important;
+    transition: transform var(--transition-base, 0.25s ease);
+}
+
+/* When sidebar is hidden on desktop (slide 100% off-screen to the right) */
+[dir="rtl"] .dashboard.sidebar-hidden .sidebar,
+[dir="rtl"] .dashboard:not(.sidebar-bottom-mode).sidebar-hidden .sidebar {
+    transform: translateX(100%) !important;
+    pointer-events: none !important;
+}
+
+/* When sidebar is visible */
+[dir="rtl"] .dashboard:not(.sidebar-hidden):not(.sidebar-bottom-mode) .sidebar {
+    transform: translateX(0) !important;
+    pointer-events: auto !important;
+}
+
+/* Responsive mobile sidebar fallback */
+@media (max-width: 630px) {
+    [dir="rtl"] .dashboard:not(.sidebar-bottom-mode).sidebar-hidden .sidebar {
+        transform: translateX(100%) !important;
+    }
+}
+
+/* Close button inside sidebar */
+[dir="rtl"] .sidebar-close-btn {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+}
+
+[dir="rtl"] .sidebar-toggle-btn {
+    margin-right: 0;
+    margin-left: 0.5rem;
+}
+
+/* Device List & Items */
+[dir="rtl"] .device-item-icon {
+    margin-right: 0;
+    margin-left: 0.75rem;
+}
+
+[dir="rtl"] .device-item-chevron {
+    transform: rotate(180deg);
+    margin-left: 0;
+    margin-right: auto;
+}
+
+/* Search input with icons */
+[dir="rtl"] .search-box input,
+[dir="rtl"] .input-search,
+[dir="rtl"] .table-search-input {
+    padding-right: 2.5rem !important;
+    padding-left: 0.75rem !important;
+    text-align: right;
+    direction: rtl;
+}
+
+[dir="rtl"] .search-box i,
+[dir="rtl"] .search-box svg,
+[dir="rtl"] .search-icon {
+    right: 0.85rem !important;
+    left: auto !important;
+}
+
+/* Tabs & Button groups */
+[dir="rtl"] .mgmt-tabs,
+[dir="rtl"] .dashboard-tabs,
+[dir="rtl"] .page-tabs {
+    flex-direction: row;
+}
+
+[dir="rtl"] .mgmt-tab i,
+[dir="rtl"] .mgmt-tab svg,
+[dir="rtl"] .page-tab i,
+[dir="rtl"] .page-tab svg,
+[dir="rtl"] .btn i,
+[dir="rtl"] .btn svg {
+    margin-right: 0;
+    margin-left: 0.4rem;
+}
+
+/* ==================== Admin & Management Forms ==================== */
+[dir="rtl"] .form-label,
+[dir="rtl"] .form-group label,
+[dir="rtl"] label {
+    text-align: right !important;
+    display: block;
+    margin-bottom: 0.35rem;
+}
+
+[dir="rtl"] .form-input,
+[dir="rtl"] .form-select,
+[dir="rtl"] .form-textarea,
+[dir="rtl"] input[type="text"],
+[dir="rtl"] input[type="email"],
+[dir="rtl"] input[type="password"],
+[dir="rtl"] input[type="number"],
+[dir="rtl"] input[type="tel"],
+[dir="rtl"] select,
+[dir="rtl"] textarea {
+    text-align: right;
+    direction: rtl;
+}
+
+[dir="rtl"] .form-input::placeholder,
+[dir="rtl"] textarea::placeholder,
+[dir="rtl"] input::placeholder {
+    text-align: right;
+}
+
+[dir="rtl"] .form-help,
+[dir="rtl"] .form-hint,
+[dir="rtl"] .field-hint,
+[dir="rtl"] .settings-section-description {
+    text-align: right;
+    line-height: 1.6;
+}
+
+/* Filter controls and toolbars */
+[dir="rtl"] .mgmt-controls,
+[dir="rtl"] .report-controls,
+[dir="rtl"] .table-toolbar {
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+[dir="rtl"] .mgmt-controls .btn-primary,
+[dir="rtl"] .mgmt-controls .btn-add {
+    margin-right: auto;
+    margin-left: 0;
+}
+
+/* Modals & Dialogs */
+[dir="rtl"] .modal,
+[dir="rtl"] .modal-content,
+[dir="rtl"] .card,
+[dir="rtl"] .settings-section {
+    text-align: right;
+    direction: rtl;
+}
+
+[dir="rtl"] .modal-header,
+[dir="rtl"] .card-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+[dir="rtl"] .modal-close,
+[dir="rtl"] .close-btn,
+[dir="rtl"] .btn-close {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+}
+
+[dir="rtl"] .modal-footer,
+[dir="rtl"] .card-footer,
+[dir="rtl"] .form-actions {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    gap: 0.75rem;
+}
+
+/* Tables */
+[dir="rtl"] table,
+[dir="rtl"] .table,
+[dir="rtl"] .mgmt-table,
+[dir="rtl"] .devices-table {
+    text-align: right;
+    direction: rtl;
+}
+
+[dir="rtl"] table th,
+[dir="rtl"] table td,
+[dir="rtl"] .table th,
+[dir="rtl"] .table td {
+    text-align: right !important;
+}
+
+[dir="rtl"] .actions-cell,
+[dir="rtl"] .table-actions {
+    text-align: left !important;
+}
+
+[dir="rtl"] .actions-cell .btn-group,
+[dir="rtl"] .table-actions .btn-group {
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+/* Badges & Pills */
+[dir="rtl"] .badge,
+[dir="rtl"] .header-menu-badge,
+[dir="rtl"] .health-chip {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+/* Toggle Switches */
+[dir="rtl"] .ticket-switch-track::after {
+    left: auto;
+    right: 2px;
+}
+
+[dir="rtl"] .ticket-switch input:checked + .ticket-switch-track::after {
+    transform: translateX(-18px);
+}
+
+[dir="rtl"] .toggle-slider::before {
+    left: auto !important;
+    right: 3px !important;
+}
+
+[dir="rtl"] .toggle-switch input:checked + .toggle-slider::before {
+    transform: translateX(-16px) !important;
+}
+
+/* Datetime picker wrapper buttons */
+[dir="rtl"] .datetime-picker-wrap {
+    position: relative;
+}
+
+[dir="rtl"] .datetime-picker-btn {
+    right: auto !important;
+    left: 0.5rem !important;
+}
+
+[dir="rtl"] .datetime-picker-wrap .form-input {
+    padding-left: 2.5rem !important;
+    padding-right: 0.85rem !important;
+}
+
+/* ==================== Persian Calendar (Jalali) Picker Modal ==================== */
+.pcal-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.pcal-modal-backdrop.active {
+    display: flex;
+    opacity: 1;
+}
+
+.pcal-dialog {
+    background: var(--bg-card, #131825);
+    border: 1px solid var(--border-color, #2d3748);
+    border-radius: 18px;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55);
+    width: 330px;
+    max-width: 95vw;
+    padding: 1.25rem;
+    direction: rtl;
+    text-align: right;
+    font-family: var(--font-display);
+    color: var(--text-primary, #f8fafc);
+    animation: pcalScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pcalScaleIn {
+    from { transform: scale(0.92); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+[data-theme="light"] .pcal-dialog,
+body.light-theme .pcal-dialog {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.15);
+    color: #0f172a;
+}
+
+.pcal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    gap: 0.5rem;
+}
+
+.pcal-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.pcal-select {
+    background: var(--bg-secondary, #1a2234);
+    border: 1px solid var(--border-color, #374151);
+    color: var(--text-primary, #f8fafc);
+    border-radius: 8px;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: var(--font-display);
+    cursor: pointer;
+    outline: none;
+}
+
+[data-theme="light"] .pcal-select,
+body.light-theme .pcal-select {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+.pcal-nav-btn {
+    background: var(--bg-secondary, #1a2234);
+    border: 1px solid var(--border-color, #374151);
+    color: var(--text-primary, #f8fafc);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.15s ease;
+}
+
+.pcal-nav-btn:hover {
+    background: var(--accent-primary, #3b82f6);
+    color: #ffffff;
+    border-color: var(--accent-primary, #3b82f6);
+}
+
+.pcal-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted, #94a3b8);
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+}
+
+.pcal-weekdays .pcal-friday {
+    color: var(--accent-danger, #ef4444);
+}
+
+.pcal-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 1rem;
+}
+
+.pcal-day-cell {
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 8px;
+    user-select: none;
+}
+
+.pcal-day-empty {
+    visibility: hidden;
+}
+
+.pcal-day-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-primary, #f8fafc);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: var(--font-display);
+}
+
+[data-theme="light"] .pcal-day-btn,
+body.light-theme .pcal-day-btn {
+    color: #0f172a;
+}
+
+.pcal-day-btn:hover {
+    background: var(--bg-hover, rgba(59, 130, 246, 0.18));
+    border-color: var(--accent-primary, #3b82f6);
+}
+
+.pcal-day-friday {
+    color: var(--accent-danger, #ef4444) !important;
+}
+
+.pcal-day-today {
+    border-color: var(--accent-warning, #f59e0b) !important;
+    font-weight: 700;
+}
+
+.pcal-day-selected {
+    background: var(--accent-primary, #3b82f6) !important;
+    color: #ffffff !important;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.pcal-time-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.75rem;
+    background: var(--bg-secondary, #1a2234);
+    border-radius: 10px;
+    border: 1px solid var(--border-color, #374151);
+    margin-bottom: 1rem;
+}
+
+[data-theme="light"] .pcal-time-wrap,
+body.light-theme .pcal-time-wrap {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.pcal-time-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary, #cbd5e1);
+}
+
+[data-theme="light"] .pcal-time-title,
+body.light-theme .pcal-time-title {
+    color: #475569;
+}
+
+.pcal-time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    direction: ltr;
+}
+
+.pcal-time-input {
+    width: 44px;
+    height: 32px;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid var(--border-color, #374151);
+    background: var(--bg-tertiary, #0f1422);
+    color: var(--text-primary, #f8fafc);
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: var(--font-mono, monospace);
+    outline: none;
+}
+
+[data-theme="light"] .pcal-time-input,
+body.light-theme .pcal-time-input {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+.pcal-time-input:focus {
+    border-color: var(--accent-primary, #3b82f6);
+}
+
+.pcal-colon {
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+.pcal-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pcal-btn {
+    padding: 0.45rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    font-family: var(--font-display);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+}
+
+.pcal-btn-today {
+    background: transparent;
+    border-color: var(--border-color, #374151);
+    color: var(--text-secondary, #cbd5e1);
+}
+
+.pcal-btn-today:hover {
+    background: var(--bg-hover, rgba(255, 255, 255, 0.08));
+    color: var(--text-primary);
+}
+
+.pcal-btn-cancel {
+    background: transparent;
+    border-color: var(--border-color, #374151);
+    color: var(--text-muted, #94a3b8);
+}
+
+.pcal-btn-cancel:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--accent-danger, #ef4444);
+    border-color: var(--accent-danger, #ef4444);
+}
+
+.pcal-btn-confirm {
+    background: var(--accent-primary, #3b82f6);
+    color: #ffffff;
+    border-color: var(--accent-primary, #3b82f6);
+}
+
+.pcal-btn-confirm:hover {
+    background: #2563eb;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+}
+
+/* ==================== Language Switcher Widget ==================== */
+.lang-switch-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    height: 38px;
+    padding: 0 0.75rem;
+    border-radius: 10px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base, 0.2s);
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.lang-switch-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.lang-flag {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.lang-text {
+    font-size: 0.82rem;
+    font-weight: 600;
+}

@@ -58,7 +58,7 @@
                 <div class="modal-header">
                     <div style="display:flex;align-items:center;gap:0.6rem;">
                         <span style="font-size:1.4rem;color:var(--accent-primary);display:inline-flex;align-items:center;"><i class="mdi mdi-magic-staff"></i></span>
-                        <h2 class="modal-title" style="font-size:1.35rem;">Guided Device Setup</h2>
+                        <h2 class="modal-title" style="font-size:1.35rem;" data-i18n="Guided Device Setup">Guided Device Setup</h2>
                     </div>
                     <button type="button" class="modal-close" onclick="closeDeviceWizard()"><i class="mdi mdi-close"></i></button>
                 </div>
@@ -69,44 +69,44 @@
                     <!-- Step 1: Company -->
                     <div class="wizard-step-panel" id="wzPanelCompany">
                         <div class="wizard-section-header">
-                            <h3 class="wizard-section-title"><i class="mdi mdi-office-building"></i> Select Company</h3>
-                            <p class="wizard-section-desc">Assign this tracking device to an existing company fleet, create a new company, or leave it platform-wide.</p>
+                            <h3 class="wizard-section-title"><i class="mdi mdi-office-building"></i> <span data-i18n="Select Company">Select Company</span></h3>
+                            <p class="wizard-section-desc" data-i18n="Assign this tracking device to an existing company fleet, create a new company, or leave it platform-wide.">Assign this tracking device to an existing company fleet, create a new company, or leave it platform-wide.</p>
                         </div>
                         <div class="wizard-choice-cards">
                             <div class="wizard-choice-card selected" onclick="_selectCompanyMode('existing')">
                                 <div class="wizard-choice-head">
-                                    <span class="wizard-choice-title"><i class="mdi mdi-domain"></i> Existing Company</span>
+                                    <span class="wizard-choice-title"><i class="mdi mdi-domain"></i> <span data-i18n="Existing Company">Existing Company</span></span>
                                     <div class="wizard-choice-radio"></div>
                                 </div>
-                                <span class="wizard-choice-desc">Assign to an existing company in the platform.</span>
+                                <span class="wizard-choice-desc" data-i18n="Assign to an existing company in the platform.">Assign to an existing company in the platform.</span>
                             </div>
                             <div class="wizard-choice-card" onclick="_selectCompanyMode('new')">
                                 <div class="wizard-choice-head">
-                                    <span class="wizard-choice-title"><i class="mdi mdi-plus-box"></i> Create New Company</span>
+                                    <span class="wizard-choice-title"><i class="mdi mdi-plus-box"></i> <span data-i18n="Create New Company">Create New Company</span></span>
                                     <div class="wizard-choice-radio"></div>
                                 </div>
-                                <span class="wizard-choice-desc">Set up a new organization right now.</span>
+                                <span class="wizard-choice-desc" data-i18n="Set up a new organization right now.">Set up a new organization right now.</span>
                             </div>
                             <div class="wizard-choice-card" onclick="_selectCompanyMode('none')">
                                 <div class="wizard-choice-head">
-                                    <span class="wizard-choice-title"><i class="mdi mdi-earth"></i> Platform Global</span>
+                                    <span class="wizard-choice-title"><i class="mdi mdi-earth"></i> <span data-i18n="Platform Global">Platform Global</span></span>
                                     <div class="wizard-choice-radio"></div>
                                 </div>
-                                <span class="wizard-choice-desc">No company association (system-wide).</span>
+                                <span class="wizard-choice-desc" data-i18n="No company association (system-wide).">No company association (system-wide).</span>
                             </div>
                         </div>
 
                         <div id="wzCompanyExistingBox" class="wizard-choice-content">
                             <div class="form-group" style="margin-bottom:0;">
-                                <label class="form-label">Company *</label>
+                                <label class="form-label" data-i18n="Company *">Company *</label>
                                 <select id="wzCompanySelect" class="form-select" onchange="_onCompanySelectionChanged()"></select>
                             </div>
                         </div>
 
                         <div id="wzCompanyNewBox" class="wizard-choice-content" style="display:none;">
                             <div class="form-group" style="margin-bottom:0;">
-                                <label class="form-label">Company Name *</label>
-                                <input type="text" id="wzNewCompanyName" class="form-input" placeholder="e.g. Acme Logistics">
+                                <label class="form-label" data-i18n="Company Name *">Company Name *</label>
+                                <input type="text" id="wzNewCompanyName" class="form-input" placeholder="e.g. Acme Logistics" data-i18n-placeholder="e.g. Acme Logistics">
                             </div>
                         </div>
                     </div>
@@ -114,26 +114,26 @@
                     <!-- Step 2: Device Details -->
                     <div class="wizard-step-panel" id="wzPanelDevice">
                         <div class="wizard-section-header">
-                            <h3 class="wizard-section-title"><i class="mdi mdi-antenna"></i> Tracker Info</h3>
-                            <p class="wizard-section-desc">Enter the hardware identification and connection protocol of the GPS device.</p>
+                            <h3 class="wizard-section-title"><i class="mdi mdi-antenna"></i> <span data-i18n="Tracker Info">Tracker Info</span></h3>
+                            <p class="wizard-section-desc" data-i18n="Enter the hardware identification and connection protocol of the GPS device.">Enter the hardware identification and connection protocol of the GPS device.</p>
                         </div>
                         <div class="wizard-form-grid">
                             <div class="form-group">
-                                <label class="form-label">Device Name *</label>
-                                <input type="text" id="wzDeviceName" class="form-input" placeholder="e.g. Delivery Van 04" required>
+                                <label class="form-label" data-i18n="Device Name *">Device Name *</label>
+                                <input type="text" id="wzDeviceName" class="form-input" placeholder="e.g. Delivery Van 04" data-i18n-placeholder="e.g. Delivery Van 04" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Protocol *</label>
+                                <label class="form-label" data-i18n="Protocol *">Protocol *</label>
                                 <select id="wzDeviceProtocol" class="form-select" onchange="_onWizardProtocolChanged()"></select>
                                 <div class="wizard-proto-info" id="wzProtoInfo" style="display:none;">
-                                    <span>Target Port: <strong class="wizard-proto-port" id="wzProtoPort">5027</strong></span>
+                                    <span><span data-i18n="Target Port:">Target Port:</span> <strong class="wizard-proto-port" id="wzProtoPort">5027</strong></span>
                                     <span id="wzProtoTransports"></span>
                                 </div>
                             </div>
                             <div class="form-group wizard-form-full" id="wzDeviceImeiGroup">
-                                <label class="form-label">IMEI / Hardware Identifier *</label>
-                                <input type="text" id="wzDeviceImei" class="form-input" placeholder="e.g. 868012345678901" required>
-                                <span style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;display:block;">Printed on the tracker label or barcode.</span>
+                                <label class="form-label" data-i18n="IMEI / Hardware Identifier *">IMEI / Hardware Identifier *</label>
+                                <input type="text" id="wzDeviceImei" class="form-input" placeholder="e.g. 868012345678901" data-i18n-placeholder="e.g. 868012345678901" required>
+                                <span style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;display:block;" data-i18n="Printed on the tracker label or barcode.">Printed on the tracker label or barcode.</span>
                             </div>
 
                             <!-- Integration Fields Panel (shown when external integration is selected) -->
@@ -146,43 +146,43 @@
                     <!-- Step 3: SIM Card -->
                     <div class="wizard-step-panel" id="wzPanelSim">
                         <div class="wizard-section-header">
-                            <h3 class="wizard-section-title"><i class="mdi mdi-sim"></i> Cellular SIM Card (Optional)</h3>
-                            <p class="wizard-section-desc">Associate a SIM card to monitor cellular data usage, balance, and network connectivity.</p>
+                            <h3 class="wizard-section-title"><i class="mdi mdi-sim"></i> <span data-i18n="Cellular SIM Card (Optional)">Cellular SIM Card (Optional)</span></h3>
+                            <p class="wizard-section-desc" data-i18n="Associate a SIM card to monitor cellular data usage, balance, and network connectivity.">Associate a SIM card to monitor cellular data usage, balance, and network connectivity.</p>
                         </div>
                         <div class="wizard-choice-cards">
                             <div class="wizard-choice-card selected" onclick="_selectSimMode('existing')">
                                 <div class="wizard-choice-head">
-                                    <span class="wizard-choice-title"><i class="mdi mdi-sim"></i> Existing SIM</span>
+                                    <span class="wizard-choice-title"><i class="mdi mdi-sim"></i> <span data-i18n="Existing SIM">Existing SIM</span></span>
                                     <div class="wizard-choice-radio"></div>
                                 </div>
-                                <span class="wizard-choice-desc">Pick an unassigned SIM from inventory.</span>
+                                <span class="wizard-choice-desc" data-i18n="Pick an unassigned SIM from inventory.">Pick an unassigned SIM from inventory.</span>
                             </div>
                             <div class="wizard-choice-card" onclick="_selectSimMode('new')">
                                 <div class="wizard-choice-head">
-                                    <span class="wizard-choice-title"><i class="mdi mdi-plus-box"></i> Register New SIM</span>
+                                    <span class="wizard-choice-title"><i class="mdi mdi-plus-box"></i> <span data-i18n="Register New SIM">Register New SIM</span></span>
                                     <div class="wizard-choice-radio"></div>
                                 </div>
-                                <span class="wizard-choice-desc">Add a new SIM or connect via Provider API.</span>
+                                <span class="wizard-choice-desc" data-i18n="Add a new SIM or connect via Provider API.">Add a new SIM or connect via Provider API.</span>
                             </div>
                             <div class="wizard-choice-card" onclick="_selectSimMode('skip')">
                                 <div class="wizard-choice-head">
-                                    <span class="wizard-choice-title"><i class="mdi mdi-skip-next"></i> Skip SIM Card</span>
+                                    <span class="wizard-choice-title"><i class="mdi mdi-skip-next"></i> <span data-i18n="Skip SIM Card">Skip SIM Card</span></span>
                                     <div class="wizard-choice-radio"></div>
                                 </div>
-                                <span class="wizard-choice-desc">Leave tracker without SIM profile.</span>
+                                <span class="wizard-choice-desc" data-i18n="Leave tracker without SIM profile.">Leave tracker without SIM profile.</span>
                             </div>
                         </div>
 
                         <div id="wzSimExistingBox" class="wizard-choice-content">
                             <div class="form-group" style="margin-bottom:0;">
-                                <label class="form-label">Available SIM Card</label>
+                                <label class="form-label" data-i18n="Available SIM Card">Available SIM Card</label>
                                 <select id="wzSimSelect" class="form-select"></select>
                             </div>
                         </div>
 
                         <div id="wzSimNewBox" class="wizard-choice-content" style="display:none;">
                             <div class="form-group" style="margin-bottom:0.85rem;">
-                                <label class="form-label">SIM Provider</label>
+                                <label class="form-label" data-i18n="SIM Provider">SIM Provider</label>
                                 <select id="wzNewSimProvider" class="form-select" onchange="_onWizardSimProviderChanged()"></select>
                             </div>
 
@@ -192,11 +192,11 @@
                             <!-- Provider API Actions: Test & Fetch -->
                             <div id="wzSimApiActions" style="display:none;margin-bottom:1rem;display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
                                 <button type="button" class="btn btn-secondary btn-small" id="wzSimTestBtn" onclick="_wzTestSimConnection()">
-                                    <i class="mdi mdi-connection" id="wzSimTestIcon"></i> <span id="wzSimTestText">Test Connection</span>
+                                    <i class="mdi mdi-connection" id="wzSimTestIcon"></i> <span id="wzSimTestText" data-i18n="Test Connection">Test Connection</span>
                                     <span id="wzSimTestLoading" class="loading" style="display:none;margin-left:0.35rem;"></span>
                                 </button>
                                 <button type="button" class="btn btn-secondary btn-small" id="wzSimFetchBtn" onclick="_wzFetchRemoteSims()">
-                                    <i class="mdi mdi-cloud-download" id="wzSimFetchIcon"></i> <span id="wzSimFetchText">Fetch Remote SIMs & Fill Data</span>
+                                    <i class="mdi mdi-cloud-download" id="wzSimFetchIcon"></i> <span id="wzSimFetchText" data-i18n="Fetch Remote SIMs & Fill Data">Fetch Remote SIMs & Fill Data</span>
                                     <span id="wzSimFetchLoading" class="loading" style="display:none;margin-left:0.35rem;"></span>
                                 </button>
                                 <div id="wzSimTestResult" style="display:none;font-size:0.8rem;padding:0.25rem 0.6rem;border-radius:6px;font-weight:500;"></div>
@@ -204,26 +204,26 @@
 
                             <!-- Remote SIM Picker Dropdown -->
                             <div id="wzSimRemoteFetchGroup" class="form-group" style="display:none;padding:0.75rem;background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:8px;margin-bottom:1rem;">
-                                <label class="form-label" style="font-weight:600;"><i class="mdi mdi-sim"></i> Discovered Remote SIM Cards (Select to auto-fill)</label>
+                                <label class="form-label" style="font-weight:600;"><i class="mdi mdi-sim"></i> <span data-i18n="Discovered Remote SIM Cards (Select to auto-fill)">Discovered Remote SIM Cards (Select to auto-fill)</span></label>
                                 <select id="wzSimRemotePickerSelect" class="form-select" onchange="_onWizardRemoteSimSelected()"></select>
                             </div>
 
                             <div class="wizard-form-grid">
                                 <div class="form-group">
-                                    <label class="form-label">Phone Number / MSISDN *</label>
-                                    <input type="text" id="wzNewSimPhone" class="form-input" placeholder="e.g. +30 691 234 5678">
+                                    <label class="form-label" data-i18n="Phone Number / MSISDN *">Phone Number / MSISDN *</label>
+                                    <input type="text" id="wzNewSimPhone" class="form-input" placeholder="e.g. +30 691 234 5678" data-i18n-placeholder="e.g. +30 691 234 5678">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Plan Name</label>
-                                    <input type="text" id="wzNewSimPlan" class="form-input" placeholder="e.g. 500MB IoT Flex">
+                                    <label class="form-label" data-i18n="Plan Name">Plan Name</label>
+                                    <input type="text" id="wzNewSimPlan" class="form-input" placeholder="e.g. 500MB IoT Flex" data-i18n-placeholder="e.g. 500MB IoT Flex">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Balance / Data (MB)</label>
-                                    <input type="number" id="wzNewSimData" class="form-input" placeholder="e.g. 500" step="any">
+                                    <label class="form-label" data-i18n="Balance / Data (MB)">Balance / Data (MB)</label>
+                                    <input type="number" id="wzNewSimData" class="form-input" placeholder="e.g. 500" step="any" data-i18n-placeholder="e.g. 500">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Account Label</label>
-                                    <input type="text" id="wzNewSimLabel" class="form-input" placeholder="e.g. IoT Fleet SIM 12">
+                                    <label class="form-label" data-i18n="Account Label">Account Label</label>
+                                    <input type="text" id="wzNewSimLabel" class="form-input" placeholder="e.g. IoT Fleet SIM 12" data-i18n-placeholder="e.g. IoT Fleet SIM 12">
                                 </div>
                             </div>
                         </div>
@@ -232,36 +232,36 @@
                     <!-- Step 4: Driver -->
                     <div class="wizard-step-panel" id="wzPanelDriver">
                         <div class="wizard-section-header">
-                            <h3 class="wizard-section-title"><i class="mdi mdi-account-tie"></i> Assign Driver (Optional)</h3>
-                            <p class="wizard-section-desc">Assign a primary driver to this vehicle, create a new driver profile, or skip for now.</p>
+                            <h3 class="wizard-section-title"><i class="mdi mdi-account-tie"></i> <span data-i18n="Assign Driver (Optional)">Assign Driver (Optional)</span></h3>
+                            <p class="wizard-section-desc" data-i18n="Assign a primary driver to this vehicle, create a new driver profile, or skip for now.">Assign a primary driver to this vehicle, create a new driver profile, or skip for now.</p>
                         </div>
                         <div class="wizard-choice-cards">
                             <div class="wizard-choice-card selected" onclick="_selectDriverMode('existing')">
                                 <div class="wizard-choice-head">
-                                    <span class="wizard-choice-title"><i class="mdi mdi-account-check"></i> Existing Driver</span>
+                                    <span class="wizard-choice-title"><i class="mdi mdi-account-check"></i> <span data-i18n="Existing Driver">Existing Driver</span></span>
                                     <div class="wizard-choice-radio"></div>
                                 </div>
-                                <span class="wizard-choice-desc">Select from registered drivers.</span>
+                                <span class="wizard-choice-desc" data-i18n="Select from registered drivers.">Select from registered drivers.</span>
                             </div>
                             <div class="wizard-choice-card" onclick="_selectDriverMode('new')">
                                 <div class="wizard-choice-head">
-                                    <span class="wizard-choice-title"><i class="mdi mdi-account-plus"></i> Create New Driver</span>
+                                    <span class="wizard-choice-title"><i class="mdi mdi-account-plus"></i> <span data-i18n="Create New Driver">Create New Driver</span></span>
                                     <div class="wizard-choice-radio"></div>
                                 </div>
-                                <span class="wizard-choice-desc">Register a new driver inline.</span>
+                                <span class="wizard-choice-desc" data-i18n="Register a new driver inline.">Register a new driver inline.</span>
                             </div>
                             <div class="wizard-choice-card" onclick="_selectDriverMode('skip')">
                                 <div class="wizard-choice-head">
-                                    <span class="wizard-choice-title"><i class="mdi mdi-skip-next"></i> Skip Driver</span>
+                                    <span class="wizard-choice-title"><i class="mdi mdi-skip-next"></i> <span data-i18n="Skip Driver">Skip Driver</span></span>
                                     <div class="wizard-choice-radio"></div>
                                 </div>
-                                <span class="wizard-choice-desc">Leave vehicle unassigned.</span>
+                                <span class="wizard-choice-desc" data-i18n="Leave vehicle unassigned.">Leave vehicle unassigned.</span>
                             </div>
                         </div>
 
                         <div id="wzDriverExistingBox" class="wizard-choice-content">
                             <div class="form-group" style="margin-bottom:0;">
-                                <label class="form-label">Driver</label>
+                                <label class="form-label" data-i18n="Driver">Driver</label>
                                 <select id="wzDriverSelect" class="form-select"></select>
                             </div>
                         </div>
@@ -269,20 +269,20 @@
                         <div id="wzDriverNewBox" class="wizard-choice-content" style="display:none;">
                             <div class="wizard-form-grid">
                                 <div class="form-group">
-                                    <label class="form-label">Full Name *</label>
-                                    <input type="text" id="wzNewDriverName" class="form-input" placeholder="e.g. John Doe">
+                                    <label class="form-label" data-i18n="Full Name *">Full Name *</label>
+                                    <input type="text" id="wzNewDriverName" class="form-input" placeholder="e.g. John Doe" data-i18n-placeholder="e.g. John Doe">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Phone Number</label>
-                                    <input type="text" id="wzNewDriverPhone" class="form-input" placeholder="e.g. +30 692 345 6789">
+                                    <label class="form-label" data-i18n="Phone Number">Phone Number</label>
+                                    <input type="text" id="wzNewDriverPhone" class="form-input" placeholder="e.g. +30 692 345 6789" data-i18n-placeholder="e.g. +30 692 345 6789">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">License Number</label>
-                                    <input type="text" id="wzNewDriverLicense" class="form-input" placeholder="e.g. DL-987654">
+                                    <label class="form-label" data-i18n="License Number">License Number</label>
+                                    <input type="text" id="wzNewDriverLicense" class="form-input" placeholder="e.g. DL-987654" data-i18n-placeholder="e.g. DL-987654">
                                 </div>
                                 <div class="form-group wizard-form-full">
-                                    <label class="form-label">Notes</label>
-                                    <input type="text" id="wzNewDriverNotes" class="form-input" placeholder="Optional driver notes...">
+                                    <label class="form-label" data-i18n="Notes">Notes</label>
+                                    <input type="text" id="wzNewDriverNotes" class="form-input" placeholder="Optional driver notes..." data-i18n-placeholder="Optional driver notes...">
                                 </div>
                             </div>
                         </div>
@@ -291,30 +291,30 @@
                     <!-- Step 5: User Access -->
                     <div class="wizard-step-panel" id="wzPanelUsers">
                         <div class="wizard-section-header">
-                            <h3 class="wizard-section-title"><i class="mdi mdi-account-group"></i> User Access Permissions</h3>
-                            <p class="wizard-section-desc">Choose which users are authorized to view and monitor this device on their dashboard.</p>
+                            <h3 class="wizard-section-title"><i class="mdi mdi-account-group"></i> <span data-i18n="User Access Permissions">User Access Permissions</span></h3>
+                            <p class="wizard-section-desc" data-i18n="Choose which users are authorized to view and monitor this device on their dashboard.">Choose which users are authorized to view and monitor this device on their dashboard.</p>
                         </div>
                         <div class="wizard-choice-cards">
                             <div class="wizard-choice-card selected" onclick="_selectUserAccessMode('select')">
                                 <div class="wizard-choice-head">
-                                    <span class="wizard-choice-title"><i class="mdi mdi-account-multiple-check"></i> Select User(s)</span>
+                                    <span class="wizard-choice-title"><i class="mdi mdi-account-multiple-check"></i> <span data-i18n="Select User(s)">Select User(s)</span></span>
                                     <div class="wizard-choice-radio"></div>
                                 </div>
-                                <span class="wizard-choice-desc">Grant access to existing platform users.</span>
+                                <span class="wizard-choice-desc" data-i18n="Grant access to existing platform users.">Grant access to existing platform users.</span>
                             </div>
                             <div class="wizard-choice-card" onclick="_selectUserAccessMode('new')">
                                 <div class="wizard-choice-head">
-                                    <span class="wizard-choice-title"><i class="mdi mdi-account-plus"></i> Create New User</span>
+                                    <span class="wizard-choice-title"><i class="mdi mdi-account-plus"></i> <span data-i18n="Create New User">Create New User</span></span>
                                     <div class="wizard-choice-radio"></div>
                                 </div>
-                                <span class="wizard-choice-desc">Create a user account and give them access.</span>
+                                <span class="wizard-choice-desc" data-i18n="Create a user account and give them access.">Create a user account and give them access.</span>
                             </div>
                             <div class="wizard-choice-card" onclick="_selectUserAccessMode('skip')">
                                 <div class="wizard-choice-head">
-                                    <span class="wizard-choice-title"><i class="mdi mdi-skip-next"></i> Skip Access</span>
+                                    <span class="wizard-choice-title"><i class="mdi mdi-skip-next"></i> <span data-i18n="Skip Access">Skip Access</span></span>
                                     <div class="wizard-choice-radio"></div>
                                 </div>
-                                <span class="wizard-choice-desc">Do not grant user access right now.</span>
+                                <span class="wizard-choice-desc" data-i18n="Do not grant user access right now.">Do not grant user access right now.</span>
                             </div>
                         </div>
 
@@ -322,9 +322,9 @@
                         <div id="wzUsersSelectBox" class="wizard-choice-content">
                             <div class="wizard-users-toolbar">
                                 <div class="wizard-users-quick">
-                                    <button type="button" class="wizard-quick-btn" onclick="_quickSelectUsers('all')">Select All</button>
-                                    <button type="button" class="wizard-quick-btn" onclick="_quickSelectUsers('me')">Only Me</button>
-                                    <button type="button" class="wizard-quick-btn" onclick="_quickSelectUsers('none')">Clear</button>
+                                    <button type="button" class="wizard-quick-btn" onclick="_quickSelectUsers('all')" data-i18n="Select All">Select All</button>
+                                    <button type="button" class="wizard-quick-btn" onclick="_quickSelectUsers('me')" data-i18n="Only Me">Only Me</button>
+                                    <button type="button" class="wizard-quick-btn" onclick="_quickSelectUsers('none')" data-i18n="Clear">Clear</button>
                                 </div>
                                 <span style="font-size:0.8rem;color:var(--text-muted);" id="wzUsersCount">0 users selected</span>
                             </div>
@@ -335,22 +335,22 @@
                         <div id="wzUsersNewBox" class="wizard-choice-content" style="display:none;">
                             <div class="wizard-form-grid">
                                 <div class="form-group">
-                                    <label class="form-label">Username *</label>
-                                    <input type="text" id="wzNewUserName" class="form-input" placeholder="e.g. john_driver">
+                                    <label class="form-label" data-i18n="Username *">Username *</label>
+                                    <input type="text" id="wzNewUserName" class="form-input" placeholder="e.g. john_driver" data-i18n-placeholder="e.g. john_driver">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Email Address *</label>
-                                    <input type="email" id="wzNewUserEmail" class="form-input" placeholder="e.g. john@example.com">
+                                    <label class="form-label" data-i18n="Email Address *">Email Address *</label>
+                                    <input type="email" id="wzNewUserEmail" class="form-input" placeholder="e.g. john@example.com" data-i18n-placeholder="e.g. john@example.com">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Password *</label>
-                                    <input type="password" id="wzNewUserPassword" class="form-input" placeholder="Min. 8 characters">
+                                    <label class="form-label" data-i18n="Password *">Password *</label>
+                                    <input type="password" id="wzNewUserPassword" class="form-input" placeholder="Min. 8 characters" data-i18n-placeholder="Min. 8 characters">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Account Role</label>
+                                    <label class="form-label" data-i18n="Account Role">Account Role</label>
                                     <select id="wzNewUserRole" class="form-select">
-                                        <option value="user">Regular User (Fleet Member)</option>
-                                        <option value="company_admin">Company Admin</option>
+                                        <option value="user" data-i18n="Regular User (Fleet Member)">Regular User (Fleet Member)</option>
+                                        <option value="company_admin" data-i18n="Company Admin">Company Admin</option>
                                     </select>
                                 </div>
                             </div>
@@ -359,7 +359,7 @@
                         <!-- Skip User Box -->
                         <div id="wzUsersSkipBox" class="wizard-choice-content" style="display:none;">
                             <div style="padding:1rem;color:var(--text-muted);font-size:0.88rem;background:var(--bg-tertiary);border-radius:8px;">
-                                <i class="mdi mdi-information-outline"></i> No users will be assigned right now. You can assign users later from User Management or Device Settings.
+                                <i class="mdi mdi-information-outline"></i> <span data-i18n="No users will be assigned right now. You can assign users later from User Management or Device Settings.">No users will be assigned right now. You can assign users later from User Management or Device Settings.</span>
                             </div>
                         </div>
                     </div>
@@ -368,8 +368,8 @@
                     <div class="wizard-step-panel" id="wzPanelSummary">
                         <div id="wzSummaryReviewState">
                             <div class="wizard-section-header">
-                                <h3 class="wizard-section-title"><i class="mdi mdi-clipboard-check"></i> Review & Create</h3>
-                                <p class="wizard-section-desc">Review your configured parameters before creating the device.</p>
+                                <h3 class="wizard-section-title"><i class="mdi mdi-clipboard-check"></i> <span data-i18n="Review & Create">Review & Create</span></h3>
+                                <p class="wizard-section-desc" data-i18n="Review your configured parameters before creating the device.">Review your configured parameters before creating the device.</p>
                             </div>
 
                             <div class="wizard-summary-grid" id="wzSummaryGrid"></div>
@@ -378,16 +378,16 @@
                         <div id="wzSummarySuccessState" style="display:none;">
                             <div class="wizard-success-header">
                                 <div class="wizard-success-badge"><i class="mdi mdi-check-bold"></i></div>
-                                <h3 style="font-size:1.4rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;">Device Registered Successfully!</h3>
-                                <p style="font-size:0.88rem;color:var(--text-muted);">Use the tracker connection cheat sheet below to configure your GPS hardware.</p>
+                                <h3 style="font-size:1.4rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;" data-i18n="Device Registered Successfully!">Device Registered Successfully!</h3>
+                                <p style="font-size:0.88rem;color:var(--text-muted);" data-i18n="Use the tracker connection cheat sheet below to configure your GPS hardware.">Use the tracker connection cheat sheet below to configure your GPS hardware.</p>
                             </div>
 
                             <div class="wizard-cheatsheet">
-                                <div class="wizard-cheatsheet-title"><i class="mdi mdi-router-wireless"></i> Tracker Connection Parameters</div>
+                                <div class="wizard-cheatsheet-title"><i class="mdi mdi-router-wireless"></i> <span data-i18n="Tracker Connection Parameters">Tracker Connection Parameters</span></div>
                                 
                                 <div class="wizard-param-row">
                                     <div class="wizard-param-meta">
-                                        <span class="wizard-param-label">Server Host / IP</span>
+                                        <span class="wizard-param-label" data-i18n="Server Host / IP">Server Host / IP</span>
                                         <span class="wizard-param-val" id="wzCsHost"></span>
                                     </div>
                                     <button type="button" class="wizard-copy-btn" onclick="copyWizardParam(this, document.getElementById('wzCsHost').textContent)"><i class="mdi mdi-content-copy"></i> Copy</button>
@@ -395,7 +395,7 @@
 
                                 <div class="wizard-param-row">
                                     <div class="wizard-param-meta">
-                                        <span class="wizard-param-label">Protocol Port</span>
+                                        <span class="wizard-param-label" data-i18n="Protocol Port">Protocol Port</span>
                                         <span class="wizard-param-val" id="wzCsPort"></span>
                                     </div>
                                     <button type="button" class="wizard-copy-btn" onclick="copyWizardParam(this, document.getElementById('wzCsPort').textContent)"><i class="mdi mdi-content-copy"></i> Copy</button>
@@ -403,7 +403,7 @@
 
                                 <div class="wizard-param-row">
                                     <div class="wizard-param-meta">
-                                        <span class="wizard-param-label">Device Identifier (IMEI)</span>
+                                        <span class="wizard-param-label" data-i18n="Device Identifier (IMEI)">Device Identifier (IMEI)</span>
                                         <span class="wizard-param-val" id="wzCsImei"></span>
                                     </div>
                                     <button type="button" class="wizard-copy-btn" onclick="copyWizardParam(this, document.getElementById('wzCsImei').textContent)"><i class="mdi mdi-content-copy"></i> Copy</button>
@@ -425,6 +425,7 @@
             </div>
         `;
         document.body.appendChild(modal);
+        if (window.i18n?.translateDOM) window.i18n.translateDOM(modal);
         return modal;
     }
 
@@ -527,7 +528,9 @@
         _selectUserAccessMode('select');
 
         // Show modal immediately
-        document.getElementById('deviceWizardModal').classList.add('active');
+        const wzModal = document.getElementById('deviceWizardModal');
+        wzModal.classList.add('active');
+        if (window.i18n?.translateDOM) window.i18n.translateDOM(wzModal);
 
         // Load data dependencies asynchronously
         await _loadWizardDependencies();
@@ -1177,18 +1180,40 @@
         _updateUsersCountDisplay();
     };
 
+    function _isFa() {
+        if (typeof window.i18n?.getLanguage === 'function') {
+            return window.i18n.getLanguage() === 'fa';
+        }
+        if (window.i18n?.currentLang) {
+            return window.i18n.currentLang === 'fa';
+        }
+        const lang = localStorage.getItem('routario_lang') || localStorage.getItem('app_lang') || document.documentElement.lang;
+        return (lang === 'fa' || (!lang && document.documentElement.dir === 'rtl'));
+    }
+
     function _updateUsersCountDisplay() {
         const count = wizardData.users.selectedUserIds.size;
         const el = document.getElementById('wzUsersCount');
-        if (el) el.textContent = `${count} ${count === 1 ? 'user' : 'users'} selected`;
+        const isFa = _isFa();
+        if (el) el.textContent = isFa ? `${count} کاربر انتخاب شده` : `${count} ${count === 1 ? 'user' : 'users'} selected`;
     }
 
     // ── Stepper UI Navigation ───────────────────────────────────────────────
     function _renderStepper() {
         const stepper = document.getElementById('wizardStepper');
+        if (!stepper) return;
         stepper.innerHTML = '';
 
+        const isFa = _isFa();
         const stepLabels = {
+            company: isFa ? 'شرکت' : 'Company',
+            device:  isFa ? 'دستگاه' : 'Device',
+            sim:     isFa ? 'سیم‌کارت' : 'SIM Card',
+            driver:  isFa ? 'راننده' : 'Driver',
+            users:   isFa ? 'دسترسی' : 'Access',
+            summary: isFa ? 'پایان' : 'Finish'
+        };
+        const stepLabelsEn = {
             company: 'Company',
             device:  'Device',
             sim:     'SIM Card',
@@ -1209,7 +1234,7 @@
             const isDone = idx < currentStepIndex;
             item.innerHTML = `
                 <div class="wizard-step-num">${isDone ? '<i class="mdi mdi-check"></i>' : idx + 1}</div>
-                <div class="wizard-step-label">${stepLabels[stepKey] || stepKey}</div>
+                <div class="wizard-step-label" data-i18n="${stepLabelsEn[stepKey] || stepKey}">${stepLabels[stepKey] || stepKey}</div>
             `;
             stepper.appendChild(item);
 
@@ -1243,15 +1268,18 @@
         const prevBtn = document.getElementById('wzPrevBtn');
         const nextBtn = document.getElementById('wzNextBtn');
         const cancelBtn = document.getElementById('wzCancelBtn');
+        const isFa = _isFa();
 
         prevBtn.style.display = currentStepIndex === 0 ? 'none' : 'inline-flex';
+        prevBtn.innerHTML = isFa ? '<i class="mdi mdi-chevron-right"></i> قبلی' : '<i class="mdi mdi-chevron-left"></i> Back';
+        cancelBtn.textContent = isFa ? 'انصراف' : 'Cancel';
 
         if (stepKey === 'summary') {
             if (wizardData.createdDevice) {
                 // Already successfully submitted
                 prevBtn.style.display = 'none';
                 cancelBtn.style.display = 'none';
-                nextBtn.innerHTML = 'Done & View Devices <i class="mdi mdi-check"></i>';
+                nextBtn.innerHTML = isFa ? 'اتمام و مشاهده دستگاه‌ها <i class="mdi mdi-check"></i>' : 'Done & View Devices <i class="mdi mdi-check"></i>';
                 nextBtn.onclick = () => {
                     closeDeviceWizard();
                     if (typeof loadDevices === 'function') loadDevices();
@@ -1259,12 +1287,12 @@
             } else {
                 _renderSummaryReview();
                 cancelBtn.style.display = 'inline-flex';
-                nextBtn.innerHTML = 'Create Device <i class="mdi mdi-check-bold"></i>';
+                nextBtn.innerHTML = isFa ? 'ایجاد دستگاه <i class="mdi mdi-check-bold"></i>' : 'Create Device <i class="mdi mdi-check-bold"></i>';
                 nextBtn.onclick = () => wizardSubmit();
             }
         } else {
             cancelBtn.style.display = 'inline-flex';
-            nextBtn.innerHTML = 'Continue <i class="mdi mdi-chevron-right"></i>';
+            nextBtn.innerHTML = isFa ? 'ادامه <i class="mdi mdi-chevron-left"></i>' : 'Continue <i class="mdi mdi-chevron-right"></i>';
             nextBtn.onclick = () => wizardNext();
         }
 
@@ -1281,20 +1309,21 @@
     // ── Validation & Transitions ────────────────────────────────────────────
     window.wizardNext = function() {
         const stepKey = activeSteps[currentStepIndex];
+        const isFa = _isFa();
 
         // 1. Validate Company
         if (stepKey === 'company') {
             if (wizardData.company.mode === 'existing') {
                 const compSel = document.getElementById('wzCompanySelect');
                 if (!compSel || !compSel.value) {
-                    showAlert('Please select a company or create a new one', 'error');
+                    showAlert(isFa ? 'لطفاً یک شرکت انتخاب کرده یا شرکت جدید بسازید' : 'Please select a company or create a new one', 'error');
                     return;
                 }
                 wizardData.company.company_id = parseInt(compSel.value, 10);
             } else if (wizardData.company.mode === 'new') {
                 const name = document.getElementById('wzNewCompanyName').value.trim();
                 if (!name) {
-                    showAlert('Company name is required', 'error');
+                    showAlert(isFa ? 'نام شرکت الزامی است' : 'Company name is required', 'error');
                     document.getElementById('wzNewCompanyName').focus();
                     return;
                 }
@@ -1313,16 +1342,16 @@
                 : document.getElementById('wzDeviceImei').value.trim();
 
             if (!name) {
-                showAlert('Device name is required', 'error');
+                showAlert(isFa ? 'نام دستگاه الزامی است' : 'Device name is required', 'error');
                 document.getElementById('wzDeviceName').focus();
                 return;
             }
             if (!protocol) {
-                showAlert('Please select a protocol', 'error');
+                showAlert(isFa ? 'لطفاً یک پروتکل انتخاب کنید' : 'Please select a protocol', 'error');
                 return;
             }
             if (!isIntg && !imei) {
-                showAlert('Device IMEI / Identifier is required', 'error');
+                showAlert(isFa ? 'کد IMEI یا شناسه دستگاه الزامی است' : 'Device IMEI / Identifier is required', 'error');
                 document.getElementById('wzDeviceImei').focus();
                 return;
             }
@@ -1359,7 +1388,7 @@
             } else if (wizardData.sim.mode === 'new') {
                 const phone = document.getElementById('wzNewSimPhone').value.trim();
                 if (!phone) {
-                    showAlert('SIM phone number / MSISDN is required', 'error');
+                    showAlert(isFa ? 'شماره تلفن / MSISDN سیم‌کارت الزامی است' : 'SIM phone number / MSISDN is required', 'error');
                     document.getElementById('wzNewSimPhone').focus();
                     return;
                 }
@@ -1381,7 +1410,7 @@
             } else if (wizardData.driver.mode === 'new') {
                 const name = document.getElementById('wzNewDriverName').value.trim();
                 if (!name) {
-                    showAlert('Driver name is required', 'error');
+                    showAlert(isFa ? 'نام راننده الزامی است' : 'Driver name is required', 'error');
                     document.getElementById('wzNewDriverName').focus();
                     return;
                 }
@@ -1401,17 +1430,17 @@
                 const role = document.getElementById('wzNewUserRole').value;
 
                 if (!username) {
-                    showAlert('Username is required', 'error');
+                    showAlert(isFa ? 'نام کاربری الزامی است' : 'Username is required', 'error');
                     document.getElementById('wzNewUserName').focus();
                     return;
                 }
                 if (!email) {
-                    showAlert('Email address is required', 'error');
+                    showAlert(isFa ? 'آدرس ایمیل الزامی است' : 'Email address is required', 'error');
                     document.getElementById('wzNewUserEmail').focus();
                     return;
                 }
                 if (!password || password.length < 8) {
-                    showAlert('Password must be at least 8 characters long', 'error');
+                    showAlert(isFa ? 'گذرواژه باید حداقل ۸ کاراکتر باشد' : 'Password must be at least 8 characters long', 'error');
                     document.getElementById('wzNewUserPassword').focus();
                     return;
                 }
@@ -1438,58 +1467,59 @@
         const grid = document.getElementById('wzSummaryGrid');
         if (!grid) return;
         grid.innerHTML = '';
+        const isFa = _isFa();
 
         // 1. Company
-        let compLabel = 'Platform Global';
+        let compLabel = isFa ? 'سراسری در سامانه' : 'Platform Global';
         if (wizardData.company.mode === 'existing') {
             const found = cachedCompanies.find(c => c.id === wizardData.company.company_id);
-            compLabel = found ? found.name : 'Selected Company';
+            compLabel = found ? found.name : (isFa ? 'شرکت انتخاب‌شده' : 'Selected Company');
         } else if (wizardData.company.mode === 'new') {
-            compLabel = `${wizardData.company.name} (New Company)`;
+            compLabel = `${wizardData.company.name} (${isFa ? 'شرکت جدید' : 'New Company'})`;
         } else if (!_isAdmin()) {
-            compLabel = 'My Company Fleet';
+            compLabel = isFa ? 'ناوگان شرکت من' : 'My Company Fleet';
         }
 
         // 2. Protocol & Port
         const isIntg = wizardData.device.is_integration;
         const proto = wizardData.device.protocol.toUpperCase();
         const pInfo = cachedProtocolInfo[wizardData.device.protocol] || {};
-        const pPort = pInfo.port ? ` (Port ${pInfo.port})` : '';
+        const pPort = pInfo.port ? ` (${isFa ? 'پورت' : 'Port'} ${pInfo.port})` : '';
 
         // 3. SIM
-        let simLabel = 'None / Skipped';
+        let simLabel = isFa ? 'هیچکدام / رد شده' : 'None / Skipped';
         if (wizardData.sim.mode === 'existing' && wizardData.sim.sim_card_id) {
             const s = cachedSims.find(x => x.id === wizardData.sim.sim_card_id);
-            simLabel = s ? (s.phone_number || s.account_label) : 'Existing SIM';
+            simLabel = s ? (s.phone_number || s.account_label) : (isFa ? 'سیم‌کارت موجود' : 'Existing SIM');
         } else if (wizardData.sim.mode === 'new') {
-            simLabel = `${wizardData.sim.phone_number} (New SIM)`;
+            simLabel = `${wizardData.sim.phone_number} (${isFa ? 'سیم‌کارت جدید' : 'New SIM'})`;
         }
 
         // 4. Driver
-        let drvLabel = 'Unassigned';
+        let drvLabel = isFa ? 'تخصیص‌نیافته' : 'Unassigned';
         if (wizardData.driver.mode === 'existing' && wizardData.driver.driver_id) {
             const d = cachedDrivers.find(x => x.id === wizardData.driver.driver_id);
-            drvLabel = d ? d.name : 'Assigned Driver';
+            drvLabel = d ? d.name : (isFa ? 'راننده منتسب' : 'Assigned Driver');
         } else if (wizardData.driver.mode === 'new') {
-            drvLabel = `${wizardData.driver.name} (New Driver)`;
+            drvLabel = `${wizardData.driver.name} (${isFa ? 'راننده جدید' : 'New Driver'})`;
         }
 
         // 5. Users
-        let usersLabel = 'None / Skipped';
+        let usersLabel = isFa ? 'هیچکدام / رد شده' : 'None / Skipped';
         if (wizardData.users.mode === 'select') {
             const count = wizardData.users.selectedUserIds.size;
-            usersLabel = `${count} ${count === 1 ? 'user' : 'users'} granted access`;
+            usersLabel = isFa ? `${count} کاربر دارای دسترسی` : `${count} ${count === 1 ? 'user' : 'users'} granted access`;
         } else if (wizardData.users.mode === 'new') {
-            usersLabel = `New user: ${wizardData.users.newUserData.username}`;
+            usersLabel = `${isFa ? 'کاربر جدید:' : 'New user:'} ${wizardData.users.newUserData.username}`;
         }
 
         const cards = [
-            { label: 'Company', val: compLabel, sub: 'Fleet scope' },
-            { label: 'Device Name', val: `🚗 ${_esc(wizardData.device.name)}`, sub: 'Tracker hardware' },
-            { label: 'Protocol', val: isIntg ? `${proto} (External)` : `${proto}${pPort}`, sub: `IMEI / ID: ${wizardData.device.imei}` },
-            { label: 'SIM Card', val: simLabel, sub: wizardData.sim.mode === 'new' ? (wizardData.sim.provider_id || 'Cellular').toUpperCase() : 'Cellular link' },
-            { label: 'Driver Assignment', val: drvLabel, sub: 'Assigned operator' },
-            { label: 'User Access', val: usersLabel, sub: 'Dashboard visibility' },
+            { label: isFa ? 'شرکت' : 'Company', val: compLabel, sub: isFa ? 'محدوده سازمانی' : 'Fleet scope' },
+            { label: isFa ? 'نام دستگاه' : 'Device Name', val: `🚗 ${_esc(wizardData.device.name)}`, sub: isFa ? 'سخت‌افزار ردیاب' : 'Tracker hardware' },
+            { label: isFa ? 'پروتکل' : 'Protocol', val: isIntg ? `${proto} (${isFa ? 'خارجی' : 'External'})` : `${proto}${pPort}`, sub: `IMEI / ID: ${wizardData.device.imei}` },
+            { label: isFa ? 'سیم‌کارت' : 'SIM Card', val: simLabel, sub: wizardData.sim.mode === 'new' ? (wizardData.sim.provider_id || 'Cellular').toUpperCase() : (isFa ? 'ارتباط شبکه' : 'Cellular link') },
+            { label: isFa ? 'انتساب راننده' : 'Driver Assignment', val: drvLabel, sub: isFa ? 'راننده خودرو' : 'Assigned operator' },
+            { label: isFa ? 'دسترسی کاربر' : 'User Access', val: usersLabel, sub: isFa ? 'مشاهده در داشبورد' : 'Dashboard visibility' },
         ];
 
         cards.forEach(c => {
@@ -1508,9 +1538,10 @@
     window.wizardSubmit = async function() {
         const nextBtn = document.getElementById('wzNextBtn');
         const prevBtn = document.getElementById('wzPrevBtn');
+        const isFa = _isFa();
         nextBtn.disabled = true;
         prevBtn.disabled = true;
-        nextBtn.innerHTML = '<span class="loading" style="display:inline-block;width:14px;height:14px;margin-right:0.4rem;vertical-align:middle;"></span> Creating...';
+        nextBtn.innerHTML = '<span class="loading" style="display:inline-block;width:14px;height:14px;margin-right:0.4rem;vertical-align:middle;"></span> ' + (isFa ? 'در حال ایجاد...' : 'Creating...');
 
         try {
             // 1. Create company inline if requested
@@ -1648,17 +1679,19 @@
             // 7. Transition into Connection Cheat Sheet
             _renderSuccessCheatSheet(createdDevice);
 
-            showAlert('Device added successfully!', 'success');
+            const isFa = _isFa();
+            showAlert(isFa ? 'دستگاه با موفقیت ایجاد شد!' : 'Device added successfully!', 'success');
             window.dispatchEvent(new CustomEvent('routario:devices-updated'));
             window.dispatchEvent(new CustomEvent('routario:users-updated'));
             if (typeof loadDevices === 'function') loadDevices();
 
         } catch (e) {
-            showAlert(e.message || 'Failed to complete device setup', 'error');
+            const isFa = _isFa();
+            showAlert(e.message || (isFa ? 'خطا در راه‌اندازی دستگاه' : 'Failed to complete device setup'), 'error');
             console.error('Wizard setup error:', e);
             nextBtn.disabled = false;
             prevBtn.disabled = false;
-            nextBtn.innerHTML = 'Create Device <i class="mdi mdi-check-bold"></i>';
+            nextBtn.innerHTML = isFa ? 'ایجاد دستگاه <i class="mdi mdi-check-bold"></i>' : 'Create Device <i class="mdi mdi-check-bold"></i>';
         }
     };
 

@@ -173,13 +173,27 @@ function showNotificationBlockedBanner() {
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches
     || window.navigator.standalone === true;
 
+  const isFa = (window.i18n?.getLanguage?.() === 'fa');
+
   // Instructions differ: installed PWA has no address bar
-  const instructions = isStandalone
-    ? `Go to your phone's <strong>Settings → Apps → Routario → Notifications</strong> and enable notifications, then tap the button below.`
-    : `Tap the <strong>lock icon 🔒</strong> in the address bar, then go to <strong>Notifications → Allow</strong> and tap the button below.`;
+  let instructions;
+  if (isFa) {
+    instructions = isStandalone
+      ? `به <strong>تنظیمات گوشی ← برنامه‌ها ← Routario ← اعلان‌ها</strong> بروید و اعلان‌ها را فعال کنید، سپس روی دکمه زیر ضربه بزنید.`
+      : `روی <strong>نماد قفل 🔒</strong> در نوار آدرس ضربه بزنید، سپس به <strong>اعلان‌ها ← مجاز کردن (Allow)</strong> بروید و روی دکمه زیر ضربه بزنید.`;
+  } else {
+    instructions = isStandalone
+      ? `Go to your phone's <strong>Settings → Apps → Routario → Notifications</strong> and enable notifications, then tap the button below.`
+      : `Tap the <strong>lock icon 🔒</strong> in the address bar, then go to <strong>Notifications → Allow</strong> and tap the button below.`;
+  }
+
+  const titleText = isFa ? 'اعلان‌ها مسدود شده‌اند' : 'Notifications are blocked';
+  const retryText = isFa ? '<i class="mdi mdi-check"></i> فعال کردم — تلاش مجدد' : '<i class="mdi mdi-check"></i> I\'ve enabled them — retry';
+  const dismissText = isFa ? 'رد کردن' : 'Dismiss';
 
   const banner = document.createElement('div');
   banner.id = 'notifBlockedBanner';
+  banner.dir = isFa ? 'rtl' : 'ltr';
   banner.innerHTML = `
     <div style="
       position: fixed;
@@ -198,6 +212,7 @@ function showNotificationBlockedBanner() {
       max-width: 420px;
       width: calc(100% - 2rem);
       animation: slideUp 0.3s ease;
+      font-family: var(--font-display, sans-serif);
     ">
       <span style="font-size: 1.75rem; flex-shrink: 0; line-height: 1;"><i class="mdi mdi-bell"></i></span>
       <div style="flex: 1; min-width: 0;">
@@ -206,7 +221,7 @@ function showNotificationBlockedBanner() {
           color: var(--accent-warning, #f59e0b);
           font-size: 0.95rem;
           margin-bottom: 0.4rem;
-        ">Notifications are blocked</div>
+        ">${titleText}</div>
         <div style="
           font-size: 0.8rem;
           color: var(--text-secondary, #94a3b8);
@@ -224,7 +239,7 @@ function showNotificationBlockedBanner() {
             cursor: pointer;
             font-size: 0.8rem;
             font-family: var(--font-display, sans-serif);
-          "><i class="mdi mdi-check"></i> I've enabled them — retry</button>
+          ">${retryText}</button>
           <button onclick="dismissNotifBanner()" style="
             background: transparent;
             border: 1px solid var(--border-color, #374151);
@@ -234,7 +249,7 @@ function showNotificationBlockedBanner() {
             cursor: pointer;
             font-size: 0.8rem;
             font-family: var(--font-display, sans-serif);
-          ">Dismiss</button>
+          ">${dismissText}</button>
         </div>
       </div>
     </div>

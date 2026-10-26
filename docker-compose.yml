@@ -34,6 +34,7 @@ services:
       - "5026:5026"     # Queclink
       - "5027:5027"     # Teltonika (TCP)
       - "5027:5027/udp" # Teltonika (UDP)
+      - "5050:5050"     # Dolphin DO-107 (TCP)
       - "5055:5055"     # OsmAnd
       - "5149:5149"     # Flespi
     networks:

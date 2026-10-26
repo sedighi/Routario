@@ -19,6 +19,7 @@ Protocol decoders are registered at startup, but listeners are opened only for p
 | **H02** | `5013` | TCP | H02-protocol devices — common in low-cost personal and vehicle trackers (`*HQ,...#` frame) |
 | **Meitrack** | `5020` | TCP | MVT100, MVT340, MVT380, T1, T3, T333, T366, T622, TC68S and other Meitrack series |
 | **Queclink** | `5026` | TCP | GV55, GV65, GV300, GV300W, GV500, GV600, GL300, GL500, GB100 and compatible GV/GL/GB series |
+| **Dolphin DO-107** | `5050` | TCP | Dolphin DO-107 GPS tracking device (Protobuf v3, LZ4 compression support) |
 | **Flespi** | `5149` | TCP | Any device sending Flespi's unified JSON wire format (newline-delimited) |
 | **OsmAnd** | `5055` | TCP (HTTP) | OsmAnd Live tracking app for Android/iOS, or any device sending OsmAnd-compatible HTTP GET requests |
 

@@ -260,6 +260,7 @@ async function loadAvailableProtocols() {
         const nativeNames = {
             teltonika: 'Teltonika', gt06: 'GT06 / Concox', osmand: 'OsmAnd',
             flespi: 'Flespi', totem: 'Totem', tk103: 'TK103', gps103: 'GPS103', h02: 'H02',
+            dolphin: 'Dolphin (DO-107)',
         };
         const nativeGroup = document.createElement('optgroup');
         nativeGroup.label = 'Native (direct connection)';

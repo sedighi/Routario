@@ -2057,7 +2057,7 @@
                 billing_status: demoCompanies[idx].billing_status || 'active',
             });
         }
-        if (apiPath === '/protocols') return json({ protocols: ['teltonika', 'gt06', 'osmand'], protocol_info: { teltonika: { port: 5027, protocol_types: ['tcp'] }, gt06: { port: 5023, protocol_types: ['tcp'] }, osmand: { port: 5055, protocol_types: ['http'] } } });
+        if (apiPath === '/protocols') return json({ protocols: ['teltonika', 'gt06', 'dolphin', 'osmand'], protocol_info: { teltonika: { port: 5027, protocol_types: ['tcp'] }, gt06: { port: 5023, protocol_types: ['tcp'] }, dolphin: { port: 5050, protocol_types: ['tcp'] }, osmand: { port: 5055, protocol_types: ['http'] } } });
         if (apiPath === '/integrations/providers' || apiPath === '/integrations/accounts') return json([]);
         if (apiPath === '/alerts/types') return json(alertTypes);
         if (apiPath.match(/^\/alerts\/\d+\/read$/) && method === 'POST') {

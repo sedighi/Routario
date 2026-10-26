@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     # Network Servers - Protocol Specific Ports
     tcp_host: str = "0.0.0.0"
     udp_host: str = "0.0.0.0"
+    dolphin_port: int = 5050
     
     # API Server
     api_host: str = "0.0.0.0"

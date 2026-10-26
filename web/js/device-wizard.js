@@ -652,11 +652,12 @@
         const nativeNames = {
             teltonika: 'Teltonika', gt06: 'GT06 / Concox', osmand: 'OsmAnd',
             flespi: 'Flespi', totem: 'Totem', tk103: 'TK103', gps103: 'GPS103', h02: 'H02',
+            dolphin: 'Dolphin (DO-107)',
         };
 
         const nativeGroup = document.createElement('optgroup');
         nativeGroup.label = 'Native (direct connection)';
-        const list = cachedProtocols.length > 0 ? cachedProtocols : ['teltonika', 'gt06', 'tk103', 'osmand'];
+        const list = cachedProtocols.length > 0 ? cachedProtocols : ['teltonika', 'gt06', 'tk103', 'osmand', 'dolphin'];
         [...list].sort().forEach(p => {
             const opt = document.createElement('option');
             opt.value = p;
@@ -1716,6 +1717,13 @@
                 Send SMS or configure via Teltonika Configurator:<br>
                 <code>setparam 2004:${host};2005:${port};2006:0</code><br>
                 <span style="font-size:0.78rem;color:var(--text-muted);margin-top:0.3rem;display:inline-block;">Ensure your SIM card APN is correctly set to allow mobile data transmission.</span>
+            `;
+        } else if (proto === 'dolphin') {
+            tipsEl.innerHTML = `
+                <strong>Dolphin DO-107 Configuration:</strong><br>
+                Configure server host and port via SMS or Dolphin Configurator:<br>
+                <code>SERVER,${host},${port},TCP#</code><br>
+                <span style="font-size:0.78rem;color:var(--text-muted);margin-top:0.3rem;display:inline-block;">Ensure Port ${port} (TCP) is set with Protobuf v3 binary protocol.</span>
             `;
         } else if (proto === 'tk103' || proto === 'gt06') {
             tipsEl.innerHTML = `

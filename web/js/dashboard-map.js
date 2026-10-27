@@ -1038,6 +1038,8 @@ function connectWebSocket() {
 
     const userId = localStorage.getItem('user_id');
     if (!userId) return;
+    const parsedUserId = parseInt(userId, 10);
+    if (isNaN(parsedUserId) || parsedUserId <= 0) return;
 
     if (wsReconnectTimer) {
         clearTimeout(wsReconnectTimer);

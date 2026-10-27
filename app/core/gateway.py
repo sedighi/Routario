@@ -89,8 +89,16 @@ class TCPDeviceHandler:
                 try:
                     chunk = await asyncio.wait_for(self.reader.read(4096), timeout=300.0)
                     if not chunk:
+                        logger.info(
+                            f"TCP connection closed by client: {self.client_ip}:{self.client_port} "
+                            f"({self.protocol.upper()}, imei: {self.imei or 'unknown'})"
+                        )
                         break
                     self.buffer += chunk
+                    logger.debug(
+                        f"Received {len(chunk)} bytes from {self.client_ip}:{self.client_port} "
+                        f"[{self.protocol.upper()}]: {chunk[:32].hex()}"
+                    )
 
                     # Inner loop: drain the buffer completely before reading again
                     while True:
@@ -178,6 +186,10 @@ class TCPDeviceHandler:
                             await self.command_callback(self.imei, self.writer)
 
                 except asyncio.TimeoutError:
+                    logger.warning(
+                        f"TCP connection timed out (300s inactivity) from {self.client_ip}:{self.client_port} "
+                        f"({self.protocol.upper()}, imei: {self.imei or 'unknown'})"
+                    )
                     break
                 except Exception as e:
                     logger.error(f"Handler error: {e}", exc_info=True)
@@ -246,6 +258,10 @@ class UDPProtocol(asyncio.DatagramProtocol):
         self.protocol = protocol
         self.position_callback = position_callback
         self.decoder = ProtocolRegistry.get_decoder(protocol)
+        self.transport = None
+
+    def connection_made(self, transport):
+        self.transport = transport
 
     def datagram_received(self, data: bytes, addr):
         asyncio.create_task(self._process(data, addr))
@@ -257,11 +273,11 @@ class UDPProtocol(asyncio.DatagramProtocol):
             res, _ = await self.decoder.decode(
                 data, {"ip": addr[0], "port": addr[1]}, None
             )
-            if isinstance(res, NormalizedPosition):
-                if not res.protocol:
-                    res.protocol = self.protocol
-                await self.position_callback(res)
-            elif isinstance(res, dict):
+            if not res:
+                return
+            if isinstance(res, dict):
+                if "response" in res and self.transport:
+                    self.transport.sendto(res["response"], addr)
                 if "position" in res and isinstance(res["position"], NormalizedPosition):
                     pos = res["position"]
                     if not pos.protocol:
@@ -272,8 +288,12 @@ class UDPProtocol(asyncio.DatagramProtocol):
                         if not extra_pos.protocol:
                             extra_pos.protocol = self.protocol
                         await self.position_callback(extra_pos)
-        except Exception:
-            pass
+            elif isinstance(res, NormalizedPosition):
+                if not res.protocol:
+                    res.protocol = self.protocol
+                await self.position_callback(res)
+        except Exception as exc:
+            logger.error(f"UDP {self.protocol.upper()} error from {addr}: {exc}", exc_info=True)
 
 
 class UDPServer:

@@ -334,6 +334,12 @@ class TeltonikaDecoder(BaseProtocolDecoder):
                 imei_len = struct.unpack('>H', data[0:2])[0]
                 if imei_len == 0:
                     return None, 1 if len(data) >= 4 else 0
+                if not (8 <= imei_len <= 30):
+                    logger.debug(
+                        f"Teltonika: invalid IMEI length {imei_len} from {client_info.get('ip')}. "
+                        f"Discarding byte to resync. Header hex: {data[:16].hex()}"
+                    )
+                    return None, 1
                 if len(data) >= imei_len + 2:
                     try:
                         imei = data[2:2 + imei_len].decode('ascii')

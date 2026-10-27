@@ -29,6 +29,8 @@ from fastapi.exceptions import ResponseValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.routing import Mount, Match
+from starlette.types import Scope, Receive, Send
 from sqlalchemy import select
 
 from core.alert_engine import get_alert_engine, periodic_alert_task
@@ -457,7 +459,10 @@ async def process_position_callback(position: NormalizedPosition):
         await ws_manager.broadcast_position_update(position, device)
         for user in device.users:
             await _notify_webhooks(user, position, device)
-        logger.debug("Position processed: %s", device.name)
+        logger.info(
+            "Position processed for %s (IMEI: %s, Lat: %.5f, Lon: %.5f)",
+            device.name, position.imei, position.latitude, position.longitude
+        )
     except Exception as exc:
         logger.error("Position processing error: %s", exc, exc_info=True)
 
@@ -1237,6 +1242,40 @@ async def websocket_endpoint(
         ws_manager.disconnect(user_id, websocket)
 
 
+@app.websocket("/ws")
+@app.websocket("/ws/")
+async def websocket_root_endpoint(
+    websocket: WebSocket,
+    user_id: Optional[int] = Query(None),
+    token: Optional[str] = Query(None),
+):
+    """
+    Fallback root WebSocket endpoint for clients connecting to /ws or /ws/
+    without user_id in the URL path. Resolves user_id from query params or JWT token.
+    """
+    settings = get_settings()
+    resolved_user_id = user_id
+
+    if resolved_user_id is None and token:
+        try:
+            payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+            token_user_id = int(payload.get("sub", 0))
+            if token_user_id > 0:
+                resolved_user_id = token_user_id
+        except Exception:
+            pass
+
+    if resolved_user_id is None:
+        logger.warning(
+            "Rejecting WebSocket on /ws without valid user_id or token from %s",
+            getattr(websocket.client, "host", "unknown"),
+        )
+        await websocket.close(code=4001, reason="Missing user identification")
+        return
+
+    await websocket_endpoint(websocket=websocket, user_id=resolved_user_id, token=token)
+
+
 async def _websocket_redis_loop(websocket: WebSocket, user_id: int):
     """WebSocket handler that subscribes to Redis channels."""
     import redis.asyncio as redis
@@ -1295,6 +1334,31 @@ async def _websocket_direct_loop(websocket: WebSocket, user_id: int):
         pass
 
 
+class SafeStaticFiles(StaticFiles):
+    """
+    Subclass of Starlette's StaticFiles that safely handles or ignores
+    non-HTTP scopes (such as WebSocket handshakes to unmatched routes)
+    instead of triggering `assert scope['type'] == 'http'`.
+    """
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            if scope["type"] == "websocket":
+                await send({"type": "websocket.close", "code": 4004})
+            return
+        await super().__call__(scope, receive, send)
+
+
+class HTTPOnlyMount(Mount):
+    """
+    Custom Mount route that only matches HTTP requests, preventing Starlette's
+    catch-all mount ('/') from intercepting WebSocket connections.
+    """
+    def matches(self, scope: Scope) -> tuple[Match, Scope]:
+        if scope["type"] != "http":
+            return Match.NONE, {}
+        return super().matches(scope)
+
+
 # Static files — must be last
 os.makedirs("web/uploads", exist_ok=True)
 for _d in ["voice", "dashcam", "company-branding", "tickets", "tts"]:
@@ -1302,8 +1366,8 @@ for _d in ["voice", "dashcam", "company-branding", "tickets", "tts"]:
         os.makedirs(f"web/uploads/{_d}", exist_ok=True)
     except OSError:
         pass
-app.mount("/uploads", StaticFiles(directory="web/uploads"), name="uploads")
-app.mount("/", StaticFiles(directory="web"), name="static")
+app.routes.append(HTTPOnlyMount("/uploads", SafeStaticFiles(directory="web/uploads"), name="uploads"))
+app.routes.append(HTTPOnlyMount("/", SafeStaticFiles(directory="web"), name="static"))
 
 
 def run_server():

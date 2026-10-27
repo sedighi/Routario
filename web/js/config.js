@@ -444,6 +444,8 @@ function initGlobalAlertWebSocket() {
     const userId = localStorage.getItem('user_id');
     const token  = localStorage.getItem('auth_token') || localStorage.getItem('token') || '';
     if (!userId || !token) return;
+    const parsedUserId = parseInt(userId, 10);
+    if (isNaN(parsedUserId) || parsedUserId <= 0) return;
 
     if (window.location.pathname.endsWith('login.html') || window.location.pathname.endsWith('/login')) return;
 

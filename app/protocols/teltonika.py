@@ -354,7 +354,31 @@ class TeltonikaDecoder(BaseProtocolDecoder):
             if len(data) < 4 and data == b'\x00' * len(data):
                 return None, 0
 
-            # ── 4. Teltonika UDP Packet ───────────────────────────────
+            # ── 4. TCP IMEI Login Packet ──────────────────────────────
+            # On a TCP stream the very first message from a Teltonika device
+            # is the IMEI login: [2-byte length][IMEI ASCII string].
+            # This MUST be checked BEFORE the UDP section because a 17-byte
+            # IMEI login (len=15 → 0x000F + 15 ASCII digits) would also
+            # satisfy ``len(data) >= 10`` and be misinterpreted as a UDP
+            # datagram header, corrupting the stream.
+            if not known_imei and len(data) >= 2:
+                imei_len = struct.unpack('>H', data[0:2])[0]
+                if 8 <= imei_len <= 20:
+                    if len(data) < imei_len + 2:
+                        return None, 0  # wait for remaining IMEI bytes
+
+                    candidate_bytes = data[2:2 + imei_len]
+                    try:
+                        candidate_imei = candidate_bytes.decode('ascii').strip()
+                    except (UnicodeDecodeError, AttributeError):
+                        candidate_imei = ""
+
+                    # An IMEI MUST consist solely of ASCII digits
+                    if candidate_imei.isdigit() and (8 <= len(candidate_imei) <= 20):
+                        logger.info(f"Teltonika login: IMEI={candidate_imei}")
+                        return {'event': 'login', 'imei': candidate_imei, 'response': b'\x01'}, imei_len + 2
+
+            # ── 5. Teltonika UDP Packet ───────────────────────────────
             # Layout:
             #   [0:2]   Packet length (uint16 big-endian, excluding these 2 bytes)
             #   [2:4]   Packet ID (uint16)
@@ -405,24 +429,6 @@ class TeltonikaDecoder(BaseProtocolDecoder):
                             if packet_type == 0:
                                 return {'response': ack, 'imei': candidate_str}, total_udp_len
                             return None, total_udp_len
-
-            # ── 5. TCP IMEI Login Packet ──────────────────────────────
-            if len(data) >= 2:
-                imei_len = struct.unpack('>H', data[0:2])[0]
-                if 8 <= imei_len <= 20:
-                    if len(data) < imei_len + 2:
-                        return None, 0  # wait for remaining IMEI bytes
-
-                    candidate_bytes = data[2:2 + imei_len]
-                    try:
-                        candidate_imei = candidate_bytes.decode('ascii').strip()
-                    except (UnicodeDecodeError, AttributeError):
-                        candidate_imei = ""
-
-                    # An IMEI MUST consist solely of ASCII digits
-                    if candidate_imei.isdigit() and (8 <= len(candidate_imei) <= 20):
-                        logger.info(f"Teltonika login: IMEI={candidate_imei}")
-                        return {'event': 'login', 'imei': candidate_imei, 'response': b'\x01'}, imei_len + 2
 
             # ── 6. Unknown / Unaligned Byte ───────────────────────────
             # Advance 1 byte to resynchronize stream

@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://mirror-pypi.runflare.com/simple}
+        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://package-mirror.liara.ir/repository/pypi/simple}
         PIP_EXTRA_INDEX_URL: ${PIP_EXTRA_INDEX_URL:-https://mirrors.aliyun.com/pypi/simple}
     image: routario:local
     restart: unless-stopped

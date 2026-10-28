@@ -1037,6 +1037,8 @@ class DatabaseService:
             return result.scalar_one()
 
     async def get_device_by_imei(self, imei: str) -> Optional[Device]:
+        if not imei or not isinstance(imei, str) or '\x00' in imei:
+            return None
         async with self.get_session() as session:
             result = await session.execute(
                 select(Device)
@@ -1160,6 +1162,8 @@ class DatabaseService:
     # ── Position processing ───────────────────────────────────────
 
     async def process_position(self, position: NormalizedPosition) -> bool:
+        if not position or not position.imei or '\x00' in position.imei:
+            return False
         device_time = position.device_time
         if device_time.tzinfo is not None:
             device_time = device_time.astimezone(timezone.utc).replace(tzinfo=None)
@@ -1282,6 +1286,8 @@ class DatabaseService:
     async def _get_device_by_imei_internal(
         self, session: AsyncSession, imei: str
     ) -> Optional[Device]:
+        if not imei or not isinstance(imei, str) or '\x00' in imei:
+            return None
         result = await session.execute(select(Device).where(Device.imei == imei))
         return result.scalar_one_or_none()
 

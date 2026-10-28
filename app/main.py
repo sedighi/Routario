@@ -469,6 +469,8 @@ async def process_position_callback(position: NormalizedPosition):
 
 async def command_callback(imei: str, writer) -> None:
     try:
+        if not imei or not isinstance(imei, str) or '\x00' in imei:
+            return
         db = get_db()
         device = await db.get_device_by_imei(imei)
         if not device or not device.is_active:
@@ -509,6 +511,8 @@ async def command_callback(imei: str, writer) -> None:
 
 async def ack_callback(imei: str, response_text: str = "") -> None:
     try:
+        if not imei or not isinstance(imei, str) or '\x00' in imei:
+            return
         db = get_db()
         device = await db.get_device_by_imei(imei)
         if not device:

@@ -235,9 +235,29 @@ class TeltonikaDecoder(BaseProtocolDecoder):
         known_imei: Optional[str] = None,
     ) -> Tuple[Union[NormalizedPosition, Dict[str, Any], None], int]:
         try:
-            # ---- TCP data packet ----------------------------------------
-            if len(data) >= 8 and data[0:4] == b'\x00\x00\x00\x00':
+            if not data:
+                return None, 0
+
+            # ── 1. Fast-reject TLS handshakes & HTTP methods ─────────
+            # Scanners, health-checks, or proxies connecting to GPS telematics ports
+            if data.startswith((b'\x16\x03', b'GET ', b'POST ', b'HEAD ', b'PRI *', b'OPTIONS ')):
+                logger.debug(
+                    f"Teltonika: Discarding non-telematics probe ({data[:8]!r}) from {client_info.get('ip')}"
+                )
+                return None, len(data)
+
+            # ── 2. TCP Data Packet (4-byte 0x00000000 preamble) ─────
+            if data.startswith(b'\x00\x00\x00\x00'):
+                if len(data) < 8:
+                    return None, 0  # wait for data_length field to arrive
+
                 data_length = struct.unpack('>I', data[4:8])[0]
+                if data_length <= 0 or data_length > 65535:
+                    logger.warning(
+                        f"Teltonika: Invalid data length {data_length} from {client_info.get('ip')}. Resyncing."
+                    )
+                    return None, 4  # discard preamble to resync
+
                 total_len = 8 + data_length + 4
                 if len(data) < total_len:
                     return None, 0  # wait for more bytes
@@ -329,27 +349,84 @@ class TeltonikaDecoder(BaseProtocolDecoder):
                     logger.warning(f"Teltonika: unsupported codec 0x{codec_id:02X}")
                     return None, consumed
 
-            # ---- IMEI login packet --------------------------------------
-            elif len(data) >= 2:
-                imei_len = struct.unpack('>H', data[0:2])[0]
-                if imei_len == 0:
-                    return None, 1 if len(data) >= 4 else 0
-                if not (8 <= imei_len <= 30):
-                    logger.debug(
-                        f"Teltonika: invalid IMEI length {imei_len} from {client_info.get('ip')}. "
-                        f"Discarding byte to resync. Header hex: {data[:16].hex()}"
-                    )
-                    return None, 1
-                if len(data) >= imei_len + 2:
-                    try:
-                        imei = data[2:2 + imei_len].decode('ascii')
-                        logger.info(f"Teltonika login: IMEI={imei}")
-                        return {'event': 'login', 'imei': imei, 'response': b'\x01'}, imei_len + 2
-                    except UnicodeDecodeError:
-                        return None, 1
+            # ── 3. Partial zero preamble check ────────────────────────
+            # If buffer is currently 1 to 3 zero bytes, wait for more data
+            if len(data) < 4 and data == b'\x00' * len(data):
                 return None, 0
 
-            return None, 0
+            # ── 4. Teltonika UDP Packet ───────────────────────────────
+            # Layout:
+            #   [0:2]   Packet length (uint16 big-endian, excluding these 2 bytes)
+            #   [2:4]   Packet ID (uint16)
+            #   [4]     Packet Type (0x00 = requires ACK, 0x01 = no ACK)
+            #   [5]     AVL packet ID (uint8)
+            #   [6:8]   IMEI length (uint16 big-endian, typically 15)
+            #   [8:8+N] IMEI string (ASCII digits)
+            if len(data) >= 10:
+                udp_packet_len = struct.unpack('>H', data[0:2])[0]
+                udp_imei_len = struct.unpack('>H', data[6:8])[0]
+                if 8 <= udp_imei_len <= 20 and len(data) >= 8 + udp_imei_len + 2:
+                    raw_candidate_imei = data[8:8 + udp_imei_len]
+                    try:
+                        candidate_str = raw_candidate_imei.decode('ascii').strip()
+                    except (UnicodeDecodeError, AttributeError):
+                        candidate_str = ""
+
+                    if candidate_str.isdigit() and (8 <= len(candidate_str) <= 20):
+                        total_udp_len = udp_packet_len + 2
+                        if len(data) < total_udp_len:
+                            return None, 0  # wait for full datagram
+
+                        packet_id = struct.unpack('>H', data[2:4])[0]
+                        packet_type = data[4]
+                        avl_packet_id = data[5]
+                        codec_offset = 8 + udp_imei_len
+                        codec_id = data[codec_offset]
+                        record_count = data[codec_offset + 1]
+                        avl_payload = data[codec_offset + 2:total_udp_len - 4]
+
+                        extended = (codec_id in (0x8E, 0x1A))
+                        event_id_width = 2 if codec_id in (0x10, 0x1A) else 0
+                        positions = self._decode_all_records(
+                            avl_payload, candidate_str, extended, event_id_width=event_id_width
+                        )
+
+                        ack = struct.pack('>HHBBB', 3, packet_id, 1, avl_packet_id, record_count)
+                        if positions:
+                            res = {
+                                'position': positions[0],
+                                'extra_positions': positions[1:],
+                                'imei': candidate_str,
+                            }
+                            if packet_type == 0:
+                                res['response'] = ack
+                            return res, total_udp_len
+                        else:
+                            if packet_type == 0:
+                                return {'response': ack, 'imei': candidate_str}, total_udp_len
+                            return None, total_udp_len
+
+            # ── 5. TCP IMEI Login Packet ──────────────────────────────
+            if len(data) >= 2:
+                imei_len = struct.unpack('>H', data[0:2])[0]
+                if 8 <= imei_len <= 20:
+                    if len(data) < imei_len + 2:
+                        return None, 0  # wait for remaining IMEI bytes
+
+                    candidate_bytes = data[2:2 + imei_len]
+                    try:
+                        candidate_imei = candidate_bytes.decode('ascii').strip()
+                    except (UnicodeDecodeError, AttributeError):
+                        candidate_imei = ""
+
+                    # An IMEI MUST consist solely of ASCII digits
+                    if candidate_imei.isdigit() and (8 <= len(candidate_imei) <= 20):
+                        logger.info(f"Teltonika login: IMEI={candidate_imei}")
+                        return {'event': 'login', 'imei': candidate_imei, 'response': b'\x01'}, imei_len + 2
+
+            # ── 6. Unknown / Unaligned Byte ───────────────────────────
+            # Advance 1 byte to resynchronize stream
+            return None, 1
 
         except Exception as exc:
             logger.error(f"Teltonika decode error: {exc}", exc_info=True)

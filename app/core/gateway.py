@@ -124,10 +124,16 @@ class TCPDeviceHandler:
 
                             # Login — device identifies itself for the first time
                             if "imei" in result:
-                                self.imei = result["imei"]
-                                connection_manager.register_connection(
-                                    self.imei, self.protocol, self.writer
-                                )
+                                imei_val = result["imei"]
+                                if imei_val and isinstance(imei_val, str) and "\x00" not in imei_val and imei_val.strip():
+                                    self.imei = imei_val.strip()
+                                    connection_manager.register_connection(
+                                        self.imei, self.protocol, self.writer
+                                    )
+                                else:
+                                    logger.warning(
+                                        f"Ignoring invalid IMEI from {self.client_ip}: {imei_val!r}"
+                                    )
 
                             # Send ACK/response bytes back to device
                             if "response" in result:
@@ -136,7 +142,7 @@ class TCPDeviceHandler:
 
                             # Command ACK — device confirmed it received our command
                             if result.get("event") == "command_ack":
-                                if self.imei and self.ack_callback:
+                                if self.imei and "\x00" not in self.imei and self.ack_callback:
                                     response_text = result.get("response_text", "")
                                     await self.ack_callback(self.imei, response_text)
                                 continue  # No position to process
@@ -147,8 +153,8 @@ class TCPDeviceHandler:
                                 if isinstance(pos, NormalizedPosition):
                                     if not pos.protocol:
                                         pos.protocol = self.protocol
-                                    if not self.imei and pos.imei:
-                                        self.imei = pos.imei
+                                    if not self.imei and pos.imei and "\x00" not in pos.imei:
+                                        self.imei = pos.imei.strip()
                                         connection_manager.register_connection(
                                             self.imei, self.protocol, self.writer
                                         )
@@ -165,8 +171,8 @@ class TCPDeviceHandler:
                         elif isinstance(result, NormalizedPosition):
                             if not result.protocol:
                                 result.protocol = self.protocol
-                            if not self.imei and result.imei:
-                                self.imei = result.imei
+                            if not self.imei and result.imei and "\x00" not in result.imei:
+                                self.imei = result.imei.strip()
                                 connection_manager.register_connection(
                                     self.imei, self.protocol, self.writer
                                 )
@@ -182,7 +188,7 @@ class TCPDeviceHandler:
                         #    so commands queued while the device is already
                         #    connected are sent on the very next message,
                         #    not just on reconnect.
-                        if self.imei and self.command_callback:
+                        if self.imei and "\x00" not in self.imei and self.command_callback:
                             await self.command_callback(self.imei, self.writer)
 
                 except asyncio.TimeoutError:
